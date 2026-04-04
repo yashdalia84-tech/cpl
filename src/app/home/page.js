@@ -189,15 +189,39 @@ const playReveal = () => {
 } catch (e) {}
 }
 
-  const startAuction = () => {
+const startAuction = () => {
     const allPlayers = playersRef.current
-    const unsold = allPlayers.filter(p => {
+
+    let unsold = allPlayers.filter(p => {
+      const rank = parseInt(p.mvpRank)
+      return !p.sold && !p.unsoldFlag && (isNaN(rank) || rank > 20)
+    })
+
+    // If active pool is empty, check if unsold round players exist
+    if (unsold.length === 0) {
+      const unsoldRound = allPlayers.filter(p => {
+        const rank = parseInt(p.mvpRank)
+        return !p.sold && p.unsoldFlag && (isNaN(rank) || rank > 20)
+      })
+      if (unsoldRound.length === 0) {
+        alert('All players have been auctioned!')
+        return
+      }
+      // Release unsold players back into pool
+      const released = allPlayers.map(p => {
+        const rank = parseInt(p.mvpRank)
+        if (!p.sold && p.unsoldFlag && (isNaN(rank) || rank > 20)) {
+          return { ...p, unsoldFlag: false }
+        }
+        return p
+      })
+      storage.setPlayers(released)
+      setPlayers(released)
+      playersRef.current = released
+      unsold = released.filter(p => {
         const rank = parseInt(p.mvpRank)
         return !p.sold && !p.unsoldFlag && (isNaN(rank) || rank > 20)
       })
-    if (unsold.length === 0) {
-      alert('No unsold players left!')
-      return
     }
 
     const finalPlayer = unsold[Math.floor(Math.random() * unsold.length)]
@@ -267,10 +291,11 @@ const playReveal = () => {
   const filtered = players.filter(p => {
     const rank = parseInt(p.mvpRank)
     const isMvp = !isNaN(rank) && rank <= 20
-    if (isMvp) return false
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase())
     if (filter === 'SOLD') return p.sold && matchSearch
     if (filter === 'UNSOLD') return p.unsoldFlag && matchSearch
+    // ALL tab — exclude MVPs, sold, and unsold-flagged
+    if (isMvp) return false
     return !p.unsoldFlag && !p.sold && matchSearch
   })
   const soldCount = players.filter(p => p.sold).length

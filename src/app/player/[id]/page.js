@@ -23,9 +23,8 @@ export default function PlayerPage() {
     const found = players.find(p => String(p.id) === String(id))
     if (!found) { router.push('/home'); return }
     setPlayer(found)
-    setStatus(found.sold ? 'sold' : found.unsoldFlag ? 'unsold' : 'unsold')
-    setSelectedTeam(found.soldTo || '')  
-          setSelectedTeam(found.soldTo || '')
+    setStatus(found.sold ? 'sold' : 'unsold')
+    setSelectedTeam(found.soldTo || '')
     setBidAmount(found.soldPrice ? String(found.soldPrice) : '')
     setTeams(storage.getTeams())
   }, [id])
@@ -123,27 +122,7 @@ export default function PlayerPage() {
         setPlayer(prev => ({ ...prev, sold: false, soldTo: null, soldPrice: null, unsoldFlag: true }))
   
         // Check if active pool is now empty for this category
-        const rank = parseInt(player.mvpRank)
-        const isThisMvp = !isNaN(rank) && rank <= 20
-  
-        const activePool = allPlayers.filter(p => {
-          const r = parseInt(p.mvpRank)
-          const isMvp = !isNaN(r) && r <= 20
-          return isMvp === isThisMvp && !p.sold && !p.unsoldFlag
-        })
-  
-        if (activePool.length === 0) {
-          const released = allPlayers.map(p => {
-            const r = parseInt(p.mvpRank)
-            const isMvp = !isNaN(r) && r <= 20
-            if (isMvp === isThisMvp && p.unsoldFlag) {
-              return { ...p, unsoldFlag: false }
-            }
-            return p
-          })
-          storage.setPlayers(released)
-          alert(`All ${isThisMvp ? 'MVP' : 'regular'} players auctioned! Unsold players are back in the pool.`)
-        }
+
       }
 
     setSaved(true)
