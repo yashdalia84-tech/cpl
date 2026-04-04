@@ -23,8 +23,9 @@ export default function PlayerPage() {
     const found = players.find(p => String(p.id) === String(id))
     if (!found) { router.push('/home'); return }
     setPlayer(found)
-    setStatus(found.sold ? 'sold' : 'unsold')
-    setSelectedTeam(found.soldTo || '')
+    setStatus(found.sold ? 'sold' : found.unsoldFlag ? 'unsold' : 'unsold')
+    setSelectedTeam(found.soldTo || '')  
+          setSelectedTeam(found.soldTo || '')
     setBidAmount(found.soldPrice ? String(found.soldPrice) : '')
     setTeams(storage.getTeams())
   }, [id])
@@ -46,6 +47,21 @@ export default function PlayerPage() {
       if (team.players && team.players.length >= 8) {
         setError(`${selectedTeam} already has 8 players!`)
         return
+      }
+      
+      // Check MVP limit
+      const rank = parseInt(player.mvpRank)
+      const isPlayerMvp = !isNaN(rank) && rank <= 20
+      if (isPlayerMvp) {
+        const teamPlayers = storage.getPlayers().filter(p => p.sold && p.soldTo === selectedTeam)
+        const mvpCount = teamPlayers.filter(p => {
+          const r = parseInt(p.mvpRank)
+          return !isNaN(r) && r <= 20
+        }).length
+        if (mvpCount >= 2) {
+          setError(`${selectedTeam} already has 2 MVP players! Maximum limit reached.`)
+          return
+        }
       }
 
       // Update team
@@ -81,30 +97,54 @@ export default function PlayerPage() {
       setTeams(storage.getTeams())
 
     } else {
-      // Mark as unsold — refund if was sold
-      if (player.sold) {
-        const allTeams = storage.getTeams()
-        const updatedTeams = allTeams.map(t => {
-          if (t.name === player.soldTo) {
-            return {
-              ...t,
-              coins: t.coins + player.soldPrice,
-              players: (t.players || []).filter(n => n !== player.name)
+        // Mark as unsold — refund if was sold
+        if (player.sold) {
+          const allTeams = storage.getTeams()
+          const updatedTeams = allTeams.map(t => {
+            if (t.name === player.soldTo) {
+              return {
+                ...t,
+                coins: t.coins + player.soldPrice,
+                players: (t.players || []).filter(n => n !== player.name)
+              }
             }
-          }
-          return t
+            return t
+          })
+          storage.setTeams(updatedTeams)
+        }
+  
+        let allPlayers = storage.getPlayers()
+        allPlayers = allPlayers.map(p =>
+          String(p.id) === String(id)
+            ? { ...p, sold: false, soldTo: null, soldPrice: null, unsoldFlag: true }
+            : p
+        )
+        storage.setPlayers(allPlayers)
+        setPlayer(prev => ({ ...prev, sold: false, soldTo: null, soldPrice: null, unsoldFlag: true }))
+  
+        // Check if active pool is now empty for this category
+        const rank = parseInt(player.mvpRank)
+        const isThisMvp = !isNaN(rank) && rank <= 20
+  
+        const activePool = allPlayers.filter(p => {
+          const r = parseInt(p.mvpRank)
+          const isMvp = !isNaN(r) && r <= 20
+          return isMvp === isThisMvp && !p.sold && !p.unsoldFlag
         })
-        storage.setTeams(updatedTeams)
+  
+        if (activePool.length === 0) {
+          const released = allPlayers.map(p => {
+            const r = parseInt(p.mvpRank)
+            const isMvp = !isNaN(r) && r <= 20
+            if (isMvp === isThisMvp && p.unsoldFlag) {
+              return { ...p, unsoldFlag: false }
+            }
+            return p
+          })
+          storage.setPlayers(released)
+          alert(`All ${isThisMvp ? 'MVP' : 'regular'} players auctioned! Unsold players are back in the pool.`)
+        }
       }
-      const allPlayers = storage.getPlayers()
-      const updated = allPlayers.map(p =>
-        String(p.id) === String(id)
-          ? { ...p, sold: false, soldTo: null, soldPrice: null }
-          : p
-      )
-      storage.setPlayers(updated)
-      setPlayer(prev => ({ ...prev, sold: false, soldTo: null, soldPrice: null }))
-    }
 
     setSaved(true)
     setTimeout(() => setSaved(false), 2500)
@@ -390,23 +430,7 @@ export default function PlayerPage() {
           <StatBox label="WICKETS" value={player.wickets} />
           <StatBox label="BASE PRICE" value={`₹${player.basePrice || 200}`} />
 
-          {/* Auction Controls */}
-          <div style={{
-            background: '#0F1640',
-            borderRadius: '12px',
-            padding: '24px',
-            marginTop: '20px',
-            border: '1px solid rgba(0,212,255,0.2)'
-          }}>
-            <div style={{
-              color: '#8899CC',
-              fontSize: '12px',
-              letterSpacing: '3px',
-              marginBottom: '16px'
-             }}>AUCTION STATUS</div>
-
          
-          </div>
         </div>
       </div>
     </div>

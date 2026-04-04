@@ -15,28 +15,7 @@ export default function TeamBar() {
   return (
     <>
       {/* Toggle button */}
-      <button
-        onClick={() => setOpen(!open)}
-        style={{
-          position: 'fixed',
-          bottom: '24px',
-          right: '24px',
-          background: '#CC2200',
-          border: 'none',
-          borderRadius: '50px',
-          padding: '12px 20px',
-          color: '#fff',
-          fontSize: '13px',
-          fontWeight: '700',
-          letterSpacing: '1px',
-          cursor: 'pointer',
-          zIndex: 200,
-          boxShadow: '0 0 20px rgba(204,34,0,0.5)',
-          fontFamily: 'inherit'
-        }}
-      >
-        {open ? '✕ CLOSE' : '🏆 TEAMS'}
-      </button>
+     
 
       {/* Panel */}
       {open && (

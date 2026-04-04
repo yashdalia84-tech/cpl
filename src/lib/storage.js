@@ -1,5 +1,4 @@
 export const storage = {
-    // Players
     getPlayers: () => {
       if (typeof window === 'undefined') return []
       const data = localStorage.getItem('cpl_players')
@@ -8,8 +7,6 @@ export const storage = {
     setPlayers: (players) => {
       localStorage.setItem('cpl_players', JSON.stringify(players))
     },
-  
-    // Teams
     getTeams: () => {
       if (typeof window === 'undefined') return []
       const data = localStorage.getItem('cpl_teams')
@@ -18,8 +15,6 @@ export const storage = {
     setTeams: (teams) => {
       localStorage.setItem('cpl_teams', JSON.stringify(teams))
     },
-  
-    // Auth
     getAuth: () => {
       if (typeof window === 'undefined') return false
       return localStorage.getItem('cpl_auth') === 'true'
@@ -30,8 +25,6 @@ export const storage = {
     logout: () => {
       localStorage.removeItem('cpl_auth')
     },
-  
-    // Clear all
     clearAll: () => {
       localStorage.removeItem('cpl_players')
       localStorage.removeItem('cpl_teams')

@@ -1,201 +1,482 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { CPL_DATA } from '@/lib/cpldata'
 import Navbar from '@/components/Navbar'
 
-// ─── Static data extracted from Excel files ───────────────────────────────────
-const DATA = {"s2_mvp":[{"Rank":"1","Player Name":"Pranay Darji","Team Name":"EXPLOSIVE TITANS","Mat":7,"Total":29.993,"Batting":13.997,"Bowling":11.836,"Fielding":4.16},{"Rank":"2","Player Name":"Yash","Team Name":"REAPERS","Mat":6,"Total":26.674,"Batting":17.439,"Bowling":6.043,"Fielding":3.192},{"Rank":"3","Player Name":"Vatsal Shah","Team Name":"GLADIATORS","Mat":5,"Total":23.604,"Batting":13.139,"Bowling":6.965,"Fielding":3.5},{"Rank":"4","Player Name":"Dr Nisarg Savjiani","Team Name":"REAPERS","Mat":6,"Total":20.729,"Batting":7.8,"Bowling":9.065,"Fielding":3.864},{"Rank":"5","Player Name":"Meet","Team Name":"SAMURAI STRIKERS","Mat":5,"Total":19.417,"Batting":9.98,"Bowling":5.657,"Fielding":3.78},{"Rank":"6","Player Name":"Aayush Parikh","Team Name":"EXPLOSIVE TITANS","Mat":7,"Total":18.17,"Batting":3.0,"Bowling":9.57,"Fielding":5.6},{"Rank":"7","Player Name":"Chandresh Thakkar","Team Name":"GLADIATORS","Mat":6,"Total":16.375,"Batting":12.684,"Bowling":0.453,"Fielding":3.238},{"Rank":"8","Player Name":"Snehal Bhatt","Team Name":"SAMURAI STRIKERS","Mat":5,"Total":16.078,"Batting":9.314,"Bowling":1.696,"Fielding":5.068},{"Rank":"9","Player Name":"Manas Mehta","Team Name":"EXPLOSIVE TITANS","Mat":7,"Total":15.656,"Batting":6.843,"Bowling":5.435,"Fielding":3.378},{"Rank":"10","Player Name":"Dhruvam M Mehta","Team Name":"VENOM VIPERS","Mat":4,"Total":14.434,"Batting":5.618,"Bowling":5.036,"Fielding":3.78},{"Rank":"11","Player Name":"Ankur Prajapati Acb 125","Team Name":"REAPERS","Mat":6,"Total":14.228,"Batting":2.93,"Bowling":9.488,"Fielding":1.81},{"Rank":"12","Player Name":"Shlok Bhavsar","Team Name":"PHOENIX","Mat":4,"Total":14.126,"Batting":5.508,"Bowling":6.546,"Fielding":2.072},{"Rank":"13","Player Name":"Dcl Nikunj Patel","Team Name":"UNICORNS","Mat":4,"Total":14.075,"Batting":5.193,"Bowling":3.842,"Fielding":5.04},{"Rank":"14","Player Name":"Prashant Bhavsar","Team Name":"KNIGHTS","Mat":4,"Total":13.976,"Batting":9.147,"Bowling":4.549,"Fielding":0.28},{"Rank":"15","Player Name":"Yash Dalia","Team Name":"SAMURAI STRIKERS","Mat":5,"Total":13.158,"Batting":3.232,"Bowling":7.836,"Fielding":2.09},{"Rank":"16","Player Name":"Dhaval Parikh","Team Name":"SKY SOARERS","Mat":4,"Total":10.781,"Batting":7.304,"Bowling":2.973,"Fielding":0.504},{"Rank":"17","Player Name":"Sandeep Meel","Team Name":"KNIGHTS","Mat":4,"Total":10.462,"Batting":4.149,"Bowling":4.745,"Fielding":1.568},{"Rank":"18","Player Name":"Madhav Mehta","Team Name":"PHOENIX","Mat":4,"Total":10.328,"Batting":1.2,"Bowling":7.028,"Fielding":2.1},{"Rank":"19","Player Name":"Ronak Patel","Team Name":"MAVERICKS","Mat":4,"Total":10.209,"Batting":5.5,"Bowling":4.709,"Fielding":0.0},{"Rank":"20","Player Name":"Mihir Dalia","Team Name":"UNICORNS","Mat":4,"Total":10.157,"Batting":4.6,"Bowling":4.129,"Fielding":1.428},{"Rank":"21","Player Name":"Aditya Gupta","Team Name":"REAPERS","Mat":4,"Total":9.937,"Batting":8.952,"Bowling":-0.079,"Fielding":1.064},{"Rank":"22","Player Name":"Jayaraj Lukose","Team Name":"GLADIATORS","Mat":6,"Total":9.467,"Batting":2.6,"Bowling":6.027,"Fielding":0.84},{"Rank":"23","Player Name":"Kunal Kadakia","Team Name":"GLADIATORS","Mat":6,"Total":9.155,"Batting":3.2,"Bowling":5.311,"Fielding":0.644},{"Rank":"24","Player Name":"Arjun","Team Name":"SKY SOARERS","Mat":3,"Total":8.865,"Batting":1.0,"Bowling":5.775,"Fielding":2.09},{"Rank":"25","Player Name":"Dimple Dalia","Team Name":"EXPLOSIVE TITANS","Mat":7,"Total":8.829,"Batting":0.0,"Bowling":7.429,"Fielding":1.4},{"Rank":"26","Player Name":"Teerth","Team Name":"REAPERS","Mat":6,"Total":8.776,"Batting":0.1,"Bowling":8.676,"Fielding":0.0},{"Rank":"27","Player Name":"Ashok Kumar Srivastava","Team Name":"EXPLOSIVE TITANS","Mat":7,"Total":8.728,"Batting":8.0,"Bowling":0.0,"Fielding":0.728},{"Rank":"28","Player Name":"Jaimin Patel","Team Name":"PHOENIX","Mat":4,"Total":8.699,"Batting":5.904,"Bowling":0.975,"Fielding":1.82},{"Rank":"29","Player Name":"Raviraj Parmar","Team Name":"VENOM VIPERS","Mat":4,"Total":8.282,"Batting":2.5,"Bowling":3.542,"Fielding":2.24},{"Rank":"30","Player Name":"Adarsh Shah","Team Name":"SKY SOARERS","Mat":4,"Total":8.233,"Batting":2.155,"Bowling":6.078,"Fielding":0.0},{"Rank":"31","Player Name":"Yugrajsinh Rathod","Team Name":"MAVERICKS","Mat":4,"Total":8.035,"Batting":5.914,"Bowling":1.487,"Fielding":0.634},{"Rank":"32","Player Name":"Jigar Thakker","Team Name":"UNICORNS","Mat":4,"Total":7.717,"Batting":2.6,"Bowling":4.137,"Fielding":0.98},{"Rank":"33","Player Name":"Tanishq Vaidya","Team Name":"REAPERS","Mat":5,"Total":7.698,"Batting":3.051,"Bowling":1.427,"Fielding":3.22},{"Rank":"34","Player Name":"Hardik Modi","Team Name":"VENOM VIPERS","Mat":4,"Total":7.569,"Batting":1.202,"Bowling":5.807,"Fielding":0.56},{"Rank":"35","Player Name":"Kunjan Patel","Team Name":"KNIGHTS","Mat":4,"Total":7.536,"Batting":4.6,"Bowling":2.656,"Fielding":0.28},{"Rank":"36","Player Name":"Sunil Lavti","Team Name":"MAVERICKS","Mat":3,"Total":7.361,"Batting":1.859,"Bowling":5.502,"Fielding":0.0},{"Rank":"37","Player Name":"Ghanshyam Patel","Team Name":"EXPLOSIVE TITANS","Mat":3,"Total":6.575,"Batting":1.519,"Bowling":2.462,"Fielding":2.594},{"Rank":"38","Player Name":"Harish Karnik","Team Name":"GLADIATORS","Mat":6,"Total":6.553,"Batting":3.4,"Bowling":0.073,"Fielding":3.08},{"Rank":"39","Player Name":"Ronak Parikh","Team Name":"GLADIATORS","Mat":6,"Total":6.359,"Batting":3.977,"Bowling":1.478,"Fielding":0.904},{"Rank":"40","Player Name":"Pranav Sheth","Team Name":"SKY SOARERS","Mat":4,"Total":5.959,"Batting":1.204,"Bowling":4.475,"Fielding":0.28},{"Rank":"41","Player Name":"Mitanshu Patel","Team Name":"UNICORNS","Mat":4,"Total":5.768,"Batting":0.4,"Bowling":5.238,"Fielding":0.13},{"Rank":"42","Player Name":"Adwitiya Ranjan","Team Name":"SAMURAI STRIKERS","Mat":5,"Total":5.694,"Batting":4.5,"Bowling":0.0,"Fielding":1.194},{"Rank":"43","Player Name":"Anand Pratap","Team Name":"MAVERICKS","Mat":4,"Total":5.496,"Batting":2.2,"Bowling":1.336,"Fielding":1.96},{"Rank":"44","Player Name":"Varsha Shah","Team Name":"REAPERS","Mat":4,"Total":5.479,"Batting":0.0,"Bowling":5.479,"Fielding":0.0},{"Rank":"45","Player Name":"Viral Sevak","Team Name":"VENOM VIPERS","Mat":4,"Total":5.205,"Batting":3.3,"Bowling":0.235,"Fielding":1.67},{"Rank":"46","Player Name":"Abhishek","Team Name":"SKY SOARERS","Mat":4,"Total":4.55,"Batting":4.454,"Bowling":0.096,"Fielding":0.0},{"Rank":"47","Player Name":"Vihaan M Dalia","Team Name":"VENOM VIPERS","Mat":4,"Total":4.511,"Batting":1.4,"Bowling":1.431,"Fielding":1.68},{"Rank":"48","Player Name":"Medhansh","Team Name":"MAVERICKS","Mat":3,"Total":4.006,"Batting":0.0,"Bowling":2.606,"Fielding":1.4},{"Rank":"49","Player Name":"Monil Lalwani","Team Name":"PHOENIX","Mat":3,"Total":4.004,"Batting":2.1,"Bowling":0.0,"Fielding":1.904},{"Rank":"50","Player Name":"Mann Bhavsar","Team Name":"KNIGHTS","Mat":4,"Total":3.502,"Batting":1.6,"Bowling":1.062,"Fielding":0.84}],"s3_mvp":[{"Rank":"-","Player Name":"Kunal Sp","Team Name":"REAPERS","Mat":7,"Total":30.879,"Batting":14.7,"Bowling":14.255,"Fielding":1.924},{"Rank":"1","Player Name":"Ronak Patel","Team Name":"EXPLOSIVE TITANS","Mat":5,"Total":22.839,"Batting":6.035,"Bowling":13.63,"Fielding":3.174},{"Rank":"2","Player Name":"Dr Nisarg Savjiani","Team Name":"REAPERS","Mat":7,"Total":22.443,"Batting":13.2,"Bowling":6.489,"Fielding":2.754},{"Rank":"-","Player Name":"Mukesh Sharma","Team Name":"SAMURAI STRIKERS","Mat":3,"Total":16.931,"Batting":6.219,"Bowling":10.002,"Fielding":0.71},{"Rank":"3","Player Name":"Vatsal Shah","Team Name":"VENOM VIPERS","Mat":5,"Total":16.926,"Batting":11.666,"Bowling":4.27,"Fielding":0.99},{"Rank":"4","Player Name":"Chandresh Thakkar","Team Name":"MAVERICKS","Mat":4,"Total":16.248,"Batting":5.609,"Bowling":8.735,"Fielding":1.904},{"Rank":"-","Player Name":"Dhaval Parikh","Team Name":"EXPLOSIVE TITANS","Mat":6,"Total":16.079,"Batting":11.628,"Bowling":0.111,"Fielding":4.34},{"Rank":"5","Player Name":"King Saglani","Team Name":"Unicorns","Mat":4,"Total":15.778,"Batting":2.438,"Bowling":13.34,"Fielding":0.0},{"Rank":"6","Player Name":"Ankur Prajapati Acb 125","Team Name":"REAPERS","Mat":7,"Total":15.508,"Batting":5.318,"Bowling":8.006,"Fielding":2.184},{"Rank":"-","Player Name":"Meet","Team Name":"EXPLOSIVE TITANS","Mat":5,"Total":15.115,"Batting":11.486,"Bowling":2.789,"Fielding":0.84},{"Rank":"7","Player Name":"Kiran Singh Rathod 111","Team Name":"SKY SOARERS","Mat":4,"Total":14.71,"Batting":2.128,"Bowling":11.088,"Fielding":1.494},{"Rank":"8","Player Name":"Smit Patel","Team Name":"REAPERS","Mat":7,"Total":14.548,"Batting":4.115,"Bowling":7.213,"Fielding":3.22},{"Rank":"9","Player Name":"Anand Pratap","Team Name":"KNIGHTS","Mat":4,"Total":14.413,"Batting":7.847,"Bowling":6.566,"Fielding":0.0},{"Rank":"10","Player Name":"Jaimin Patel","Team Name":"KNIGHTS","Mat":4,"Total":14.075,"Batting":5.6,"Bowling":8.251,"Fielding":0.224},{"Rank":"11","Player Name":"Yash Dalia","Team Name":"SKY SOARERS","Mat":4,"Total":13.97,"Batting":3.617,"Bowling":6.935,"Fielding":3.418},{"Rank":"12","Player Name":"Prashant Bhavsar","Team Name":"VENOM VIPERS","Mat":5,"Total":13.832,"Batting":4.829,"Bowling":8.143,"Fielding":0.86},{"Rank":"13","Player Name":"Hardik Modi","Team Name":"EXPLOSIVE TITANS","Mat":6,"Total":13.405,"Batting":1.0,"Bowling":10.463,"Fielding":1.942},{"Rank":"14","Player Name":"Dcl Nikunj Patel","Team Name":"Gladiators","Mat":4,"Total":11.893,"Batting":2.567,"Bowling":5.126,"Fielding":4.2},{"Rank":"15","Player Name":"Abhishek","Team Name":"SKY SOARERS","Mat":4,"Total":11.236,"Batting":4.647,"Bowling":4.909,"Fielding":1.68},{"Rank":"-","Player Name":"Adarsh Shah","Team Name":"SAMURAI STRIKERS","Mat":4,"Total":10.967,"Batting":8.249,"Bowling":2.718,"Fielding":0.0},{"Rank":"16","Player Name":"Atharv","Team Name":"REAPERS","Mat":7,"Total":10.947,"Batting":0.8,"Bowling":4.453,"Fielding":5.694},{"Rank":"-","Player Name":"Ronak Parikh","Team Name":"PHOENIX","Mat":6,"Total":10.84,"Batting":2.4,"Bowling":8.44,"Fielding":0.0},{"Rank":"17","Player Name":"Manas Mehta","Team Name":"PHOENIX","Mat":6,"Total":10.788,"Batting":6.015,"Bowling":2.673,"Fielding":2.1},{"Rank":"18","Player Name":"Viral Sevak","Team Name":"PHOENIX","Mat":6,"Total":10.599,"Batting":5.96,"Bowling":2.959,"Fielding":1.68},{"Rank":"19","Player Name":"Pranay Darji","Team Name":"MAVERICKS","Mat":4,"Total":10.395,"Batting":2.776,"Bowling":5.789,"Fielding":1.83},{"Rank":"20","Player Name":"Raviraj Parmar","Team Name":"VENOM VIPERS","Mat":5,"Total":10.286,"Batting":5.035,"Bowling":4.541,"Fielding":0.71},{"Rank":"21","Player Name":"Shlok Bhavsar","Team Name":"SAMURAI STRIKERS","Mat":4,"Total":9.979,"Batting":3.5,"Bowling":5.489,"Fielding":0.99},{"Rank":"22","Player Name":"Harish Karnik","Team Name":"VENOM VIPERS","Mat":5,"Total":9.648,"Batting":2.8,"Bowling":5.644,"Fielding":1.204},{"Rank":"-","Player Name":"Yugrajsinh Rathod","Team Name":"Unicorns","Mat":4,"Total":9.363,"Batting":4.827,"Bowling":3.808,"Fielding":0.728},{"Rank":"23","Player Name":"Rushi Darji","Team Name":"MAVERICKS","Mat":4,"Total":8.772,"Batting":4.914,"Bowling":3.018,"Fielding":0.84},{"Rank":"24","Player Name":"Pranav Sheth","Team Name":"EXPLOSIVE TITANS","Mat":5,"Total":8.352,"Batting":0.7,"Bowling":6.952,"Fielding":0.7},{"Rank":"25","Player Name":"Dhruvam M Mehta","Team Name":"PHOENIX","Mat":6,"Total":8.211,"Batting":3.602,"Bowling":2.929,"Fielding":1.68},{"Rank":"26","Player Name":"Bhavya","Team Name":"PHOENIX","Mat":5,"Total":8.141,"Batting":1.898,"Bowling":2.639,"Fielding":3.604},{"Rank":"-","Player Name":"Ayush Parikh","Team Name":"MAVERICKS","Mat":4,"Total":8.063,"Batting":3.001,"Bowling":2.952,"Fielding":2.11},{"Rank":"27","Player Name":"Kunjan Patel","Team Name":"KNIGHTS","Mat":4,"Total":7.421,"Batting":5.315,"Bowling":0.706,"Fielding":1.4},{"Rank":"-","Player Name":"Dr Pratik Parekh","Team Name":"EXPLOSIVE TITANS","Mat":6,"Total":7.294,"Batting":4.534,"Bowling":1.22,"Fielding":1.54},{"Rank":"28","Player Name":"Jigar Thakker","Team Name":"Unicorns","Mat":4,"Total":7.223,"Batting":3.304,"Bowling":3.079,"Fielding":0.84},{"Rank":"-","Player Name":"Hetal Parikh","Team Name":"KNIGHTS","Mat":4,"Total":6.915,"Batting":1.9,"Bowling":4.585,"Fielding":0.43},{"Rank":"-","Player Name":"Abhishek","Team Name":"EXPLOSIVE TITANS","Mat":5,"Total":6.488,"Batting":5.003,"Bowling":0.075,"Fielding":1.41},{"Rank":"-","Player Name":"Bijal Patel","Team Name":"SKY SOARERS","Mat":4,"Total":6.334,"Batting":0.741,"Bowling":0.833,"Fielding":4.76},{"Rank":"29","Player Name":"Arpit Patel","Team Name":"VENOM VIPERS","Mat":4,"Total":6.22,"Batting":4.602,"Bowling":-0.062,"Fielding":1.68},{"Rank":"30","Player Name":"Rutuj","Team Name":"PHOENIX","Mat":5,"Total":6.084,"Batting":3.0,"Bowling":2.104,"Fielding":0.98},{"Rank":"31","Player Name":"Mann Bhavsar","Team Name":"VENOM VIPERS","Mat":5,"Total":5.746,"Batting":3.217,"Bowling":1.445,"Fielding":1.084},{"Rank":"32","Player Name":"Medansh","Team Name":"EXPLOSIVE TITANS","Mat":2,"Total":5.641,"Batting":1.0,"Bowling":3.763,"Fielding":0.878},{"Rank":"-","Player Name":"Aditya Gupta","Team Name":"Gladiators","Mat":2,"Total":5.321,"Batting":3.0,"Bowling":1.621,"Fielding":0.7},{"Rank":"33","Player Name":"Ap Harpalsinh Jadeja","Team Name":"KNIGHTS","Mat":4,"Total":5.302,"Batting":1.2,"Bowling":2.198,"Fielding":1.904},{"Rank":"34","Player Name":"Ghanshyam Patel","Team Name":"SKY SOARERS","Mat":4,"Total":5.269,"Batting":1.801,"Bowling":3.038,"Fielding":0.43},{"Rank":"35","Player Name":"Mihir Dalia","Team Name":"SAMURAI STRIKERS","Mat":4,"Total":5.245,"Batting":4.1,"Bowling":0.081,"Fielding":1.064}],"s2_bat":[{"Rank":1,"Player Name":"Yash","Team Name":"REAPERS","Mat":6,"Inns":6,"Runs":173,"Balls":126,"Highest":"53*","N/O":3,"Avg":57.67,"SR":137.3,"4s":12,"6s":8,"50s":2,"100s":0},{"Rank":2,"Player Name":"Pranay Darji","Team Name":"EXPLOSIVE TITANS","Mat":7,"Inns":7,"Runs":136,"Balls":105,"Highest":"37*","N/O":4,"Avg":45.33,"SR":129.52,"4s":6,"6s":10,"50s":0,"100s":0},{"Rank":3,"Player Name":"Vatsal Shah","Team Name":"GLADIATORS","Mat":5,"Inns":5,"Runs":130,"Balls":100,"Highest":41,"N/O":1,"Avg":32.5,"SR":130,"4s":6,"6s":9,"50s":0,"100s":0},{"Rank":4,"Player Name":"Chandresh Thakkar","Team Name":"GLADIATORS","Mat":6,"Inns":5,"Runs":124,"Balls":90,"Highest":"39*","N/O":4,"Avg":124,"SR":137.78,"4s":4,"6s":10,"50s":0,"100s":0},{"Rank":5,"Player Name":"Meet","Team Name":"SAMURAI STRIKERS","Mat":5,"Inns":5,"Runs":97,"Balls":58,"Highest":74,"N/O":0,"Avg":19.4,"SR":167.24,"4s":1,"6s":11,"50s":1,"100s":0},{"Rank":6,"Player Name":"Snehal Bhatt","Team Name":"SAMURAI STRIKERS","Mat":5,"Inns":5,"Runs":92,"Balls":112,"Highest":23,"N/O":0,"Avg":18.4,"SR":82.14,"4s":3,"6s":5,"50s":0,"100s":0},{"Rank":7,"Player Name":"Prashant Bhavsar","Team Name":"KNIGHTS","Mat":4,"Inns":4,"Runs":90,"Balls":83,"Highest":"38*","N/O":1,"Avg":30,"SR":108.43,"4s":4,"6s":5,"50s":0,"100s":0},{"Rank":8,"Player Name":"Aditya Gupta","Team Name":"REAPERS","Mat":6,"Inns":4,"Runs":89,"Balls":72,"Highest":"36*","N/O":1,"Avg":29.67,"SR":123.61,"4s":4,"6s":4,"50s":0,"100s":0},{"Rank":9,"Player Name":"Ashok Kumar Srivastava","Team Name":"EXPLOSIVE TITANS","Mat":7,"Inns":7,"Runs":80,"Balls":111,"Highest":"22*","N/O":1,"Avg":13.33,"SR":72.07,"4s":1,"6s":1,"50s":0,"100s":0},{"Rank":10,"Player Name":"Dr Nisarg Savjiani","Team Name":"REAPERS","Mat":6,"Inns":6,"Runs":78,"Balls":83,"Highest":"31*","N/O":2,"Avg":19.5,"SR":93.98,"4s":2,"6s":3,"50s":0,"100s":0},{"Rank":11,"Player Name":"Dhaval Parikh","Team Name":"SKY SOARERS","Mat":4,"Inns":4,"Runs":73,"Balls":87,"Highest":"36*","N/O":1,"Avg":24.33,"SR":83.91,"4s":2,"6s":1,"50s":0,"100s":0},{"Rank":12,"Player Name":"Manas Mehta","Team Name":"EXPLOSIVE TITANS","Mat":7,"Inns":6,"Runs":68,"Balls":112,"Highest":"18*","N/O":1,"Avg":13.6,"SR":60.71,"4s":0,"6s":1,"50s":0,"100s":0},{"Rank":13,"Player Name":"Yugrajsinh Rathod","Team Name":"MAVERICKS","Mat":4,"Inns":4,"Runs":59,"Balls":37,"Highest":"29*","N/O":1,"Avg":19.67,"SR":159.46,"4s":1,"6s":6,"50s":0,"100s":0},{"Rank":14,"Player Name":"Jaimin Patel","Team Name":"PHOENIX","Mat":4,"Inns":4,"Runs":59,"Balls":76,"Highest":23,"N/O":1,"Avg":19.67,"SR":77.63,"4s":0,"6s":3,"50s":0,"100s":0},{"Rank":15,"Player Name":"Ronak Patel","Team Name":"MAVERICKS","Mat":4,"Inns":3,"Runs":55,"Balls":60,"Highest":42,"N/O":0,"Avg":18.33,"SR":91.67,"4s":3,"6s":2,"50s":0,"100s":0},{"Rank":16,"Player Name":"Dhruvam M Mehta","Team Name":"VENOM VIPERS","Mat":4,"Inns":4,"Runs":55,"Balls":55,"Highest":23,"N/O":0,"Avg":13.75,"SR":100,"4s":4,"6s":3,"50s":0,"100s":0},{"Rank":17,"Player Name":"Shlok Bhavsar","Team Name":"PHOENIX","Mat":4,"Inns":4,"Runs":55,"Balls":78,"Highest":23,"N/O":0,"Avg":13.75,"SR":70.51,"4s":1,"6s":0,"50s":0,"100s":0},{"Rank":18,"Player Name":"Dcl Nikunj Patel","Team Name":"UNICORNS","Mat":4,"Inns":4,"Runs":51,"Balls":48,"Highest":21,"N/O":1,"Avg":17,"SR":106.25,"4s":4,"6s":1,"50s":0,"100s":0},{"Rank":19,"Player Name":"Mihir Dalia","Team Name":"UNICORNS","Mat":4,"Inns":3,"Runs":46,"Balls":74,"Highest":18,"N/O":0,"Avg":15.33,"SR":62.16,"4s":0,"6s":1,"50s":0,"100s":0},{"Rank":20,"Player Name":"Kunjan Patel","Team Name":"KNIGHTS","Mat":4,"Inns":4,"Runs":46,"Balls":61,"Highest":19,"N/O":0,"Avg":11.5,"SR":75.41,"4s":2,"6s":1,"50s":0,"100s":0},{"Rank":21,"Player Name":"Adwitiya Ranjan","Team Name":"SAMURAI STRIKERS","Mat":5,"Inns":5,"Runs":45,"Balls":84,"Highest":20,"N/O":0,"Avg":9,"SR":53.57,"4s":0,"6s":1,"50s":0,"100s":0},{"Rank":22,"Player Name":"Abhishek","Team Name":"SKY SOARERS","Mat":4,"Inns":4,"Runs":44,"Balls":68,"Highest":"17*","N/O":1,"Avg":14.67,"SR":64.71,"4s":2,"6s":2,"50s":0,"100s":0},{"Rank":23,"Player Name":"Sandeep Meel","Team Name":"KNIGHTS","Mat":4,"Inns":4,"Runs":41,"Balls":37,"Highest":22,"N/O":0,"Avg":10.25,"SR":110.81,"4s":2,"6s":3,"50s":0,"100s":0},{"Rank":24,"Player Name":"Ronak Parikh","Team Name":"GLADIATORS","Mat":6,"Inns":6,"Runs":39,"Balls":46,"Highest":"15*","N/O":2,"Avg":9.75,"SR":84.78,"4s":3,"6s":1,"50s":0,"100s":0},{"Rank":25,"Player Name":"Mukesh Sharma","Team Name":"UNICORNS","Mat":2,"Inns":2,"Runs":35,"Balls":27,"Highest":"35*","N/O":1,"Avg":35,"SR":129.63,"4s":4,"6s":2,"50s":0,"100s":0},{"Rank":26,"Player Name":"Harish Karnik","Team Name":"GLADIATORS","Mat":6,"Inns":6,"Runs":34,"Balls":62,"Highest":10,"N/O":0,"Avg":5.67,"SR":54.84,"4s":0,"6s":0,"50s":0,"100s":0},{"Rank":27,"Player Name":"Viral Sevak","Team Name":"VENOM VIPERS","Mat":4,"Inns":4,"Runs":33,"Balls":61,"Highest":11,"N/O":0,"Avg":8.25,"SR":54.1,"4s":0,"6s":0,"50s":0,"100s":0},{"Rank":28,"Player Name":"Kunal Kadakia","Team Name":"GLADIATORS","Mat":6,"Inns":5,"Runs":32,"Balls":47,"Highest":"9*","N/O":2,"Avg":10.67,"SR":68.09,"4s":0,"6s":1,"50s":0,"100s":0},{"Rank":29,"Player Name":"Yash Dalia","Team Name":"SAMURAI STRIKERS","Mat":5,"Inns":5,"Runs":32,"Balls":39,"Highest":13,"N/O":0,"Avg":6.4,"SR":82.05,"4s":1,"6s":2,"50s":0,"100s":0},{"Rank":30,"Player Name":"Tanishq Vaidya","Team Name":"REAPERS","Mat":6,"Inns":4,"Runs":30,"Balls":31,"Highest":10,"N/O":2,"Avg":15,"SR":96.77,"4s":2,"6s":1,"50s":0,"100s":0}],"s3_bat":[{"Rank":1,"Player Name":"Kunal Sp","Team Name":"REAPERS","Mat":7,"Inns":6,"Runs":147,"Balls":137,"Highest":"58*","N/O":3,"Avg":49,"SR":107.3,"4s":4,"6s":8,"50s":1,"100s":0},{"Rank":2,"Player Name":"Dr Nisarg Savjiani","Team Name":"REAPERS","Mat":7,"Inns":7,"Runs":132,"Balls":143,"Highest":"36*","N/O":2,"Avg":26.4,"SR":92.31,"4s":2,"6s":5,"50s":0,"100s":0},{"Rank":3,"Player Name":"Dhaval Parikh","Team Name":"EXPLOSIVE TITANS","Mat":6,"Inns":6,"Runs":116,"Balls":119,"Highest":43,"N/O":0,"Avg":19.33,"SR":97.48,"4s":3,"6s":4,"50s":0,"100s":0},{"Rank":4,"Player Name":"Vatsal Shah","Team Name":"VENOM VIPERS","Mat":5,"Inns":5,"Runs":114,"Balls":76,"Highest":41,"N/O":0,"Avg":22.8,"SR":150,"4s":4,"6s":10,"50s":0,"100s":0},{"Rank":5,"Player Name":"Meet","Team Name":"EXPLOSIVE TITANS","Mat":5,"Inns":5,"Runs":114,"Balls":87,"Highest":47,"N/O":0,"Avg":22.8,"SR":131.03,"4s":1,"6s":10,"50s":0,"100s":0},{"Rank":6,"Player Name":"Adarsh Shah","Team Name":"SAMURAI STRIKERS","Mat":4,"Inns":4,"Runs":82,"Balls":95,"Highest":32,"N/O":1,"Avg":27.33,"SR":86.32,"4s":2,"6s":4,"50s":0,"100s":0},{"Rank":7,"Player Name":"Anand Pratap","Team Name":"KNIGHTS","Mat":4,"Inns":4,"Runs":76,"Balls":60,"Highest":36,"N/O":0,"Avg":19,"SR":126.67,"4s":2,"6s":6,"50s":0,"100s":0},{"Rank":8,"Player Name":"Mukesh Sharma","Team Name":"SAMURAI STRIKERS","Mat":3,"Inns":3,"Runs":60,"Balls":48,"Highest":"26*","N/O":1,"Avg":30,"SR":125,"4s":2,"6s":6,"50s":0,"100s":0},{"Rank":9,"Player Name":"Ronak Patel","Team Name":"EXPLOSIVE TITANS","Mat":5,"Inns":4,"Runs":60,"Balls":67,"Highest":46,"N/O":1,"Avg":20,"SR":89.55,"4s":2,"6s":3,"50s":0,"100s":0},{"Rank":10,"Player Name":"Manas Mehta","Team Name":"PHOENIX","Mat":6,"Inns":6,"Runs":60,"Balls":76,"Highest":"19*","N/O":2,"Avg":15,"SR":78.95,"4s":1,"6s":1,"50s":0,"100s":0},{"Rank":11,"Player Name":"Viral Sevak","Team Name":"PHOENIX","Mat":6,"Inns":4,"Runs":59,"Balls":71,"Highest":22,"N/O":0,"Avg":14.75,"SR":83.1,"4s":0,"6s":3,"50s":0,"100s":0},{"Rank":12,"Player Name":"Jaimin Patel","Team Name":"KNIGHTS","Mat":4,"Inns":4,"Runs":56,"Balls":59,"Highest":"41*","N/O":1,"Avg":18.67,"SR":94.92,"4s":0,"6s":3,"50s":0,"100s":0},{"Rank":13,"Player Name":"Chandresh Thakkar","Team Name":"MAVERICKS","Mat":4,"Inns":4,"Runs":56,"Balls":75,"Highest":19,"N/O":0,"Avg":14,"SR":74.67,"4s":0,"6s":2,"50s":0,"100s":0},{"Rank":14,"Player Name":"Kunjan Patel","Team Name":"KNIGHTS","Mat":4,"Inns":4,"Runs":53,"Balls":62,"Highest":25,"N/O":0,"Avg":13.25,"SR":85.48,"4s":0,"6s":3,"50s":0,"100s":0},{"Rank":15,"Player Name":"Ankur Prajapati Acb 125","Team Name":"REAPERS","Mat":7,"Inns":6,"Runs":53,"Balls":57,"Highest":"19*","N/O":1,"Avg":10.6,"SR":92.98,"4s":1,"6s":3,"50s":0,"100s":0},{"Rank":16,"Player Name":"Raviraj Parmar","Team Name":"VENOM VIPERS","Mat":5,"Inns":5,"Runs":50,"Balls":82,"Highest":20,"N/O":0,"Avg":10,"SR":60.98,"4s":1,"6s":1,"50s":0,"100s":0},{"Rank":17,"Player Name":"Rushi Darji","Team Name":"MAVERICKS","Mat":4,"Inns":4,"Runs":49,"Balls":64,"Highest":"30*","N/O":1,"Avg":16.33,"SR":76.56,"4s":1,"6s":1,"50s":0,"100s":0},{"Rank":18,"Player Name":"Abhishek","Team Name":"EXPLOSIVE TITANS","Mat":5,"Inns":4,"Runs":48,"Balls":33,"Highest":16,"N/O":2,"Avg":24,"SR":145.45,"4s":2,"6s":4,"50s":0,"100s":0},{"Rank":19,"Player Name":"Prashant Bhavsar","Team Name":"VENOM VIPERS","Mat":5,"Inns":5,"Runs":48,"Balls":42,"Highest":"28*","N/O":1,"Avg":12,"SR":114.29,"4s":0,"6s":4,"50s":0,"100s":0},{"Rank":20,"Player Name":"Yugrajsinh Rathod","Team Name":"Unicorns","Mat":4,"Inns":4,"Runs":47,"Balls":45,"Highest":19,"N/O":0,"Avg":11.75,"SR":104.44,"4s":1,"6s":3,"50s":0,"100s":0},{"Rank":21,"Player Name":"Arpit Patel","Team Name":"VENOM VIPERS","Mat":5,"Inns":4,"Runs":46,"Balls":45,"Highest":30,"N/O":2,"Avg":23,"SR":102.22,"4s":0,"6s":5,"50s":0,"100s":0},{"Rank":22,"Player Name":"Abhishek","Team Name":"SKY SOARERS","Mat":4,"Inns":4,"Runs":46,"Balls":50,"Highest":19,"N/O":0,"Avg":11.5,"SR":92,"4s":1,"6s":3,"50s":0,"100s":0},{"Rank":23,"Player Name":"Dr Pratik Parekh","Team Name":"EXPLOSIVE TITANS","Mat":6,"Inns":6,"Runs":45,"Balls":58,"Highest":"25*","N/O":2,"Avg":11.25,"SR":77.59,"4s":0,"6s":2,"50s":0,"100s":0},{"Rank":24,"Player Name":"Smit Patel","Team Name":"REAPERS","Mat":7,"Inns":4,"Runs":41,"Balls":44,"Highest":21,"N/O":0,"Avg":10.25,"SR":93.18,"4s":1,"6s":2,"50s":0,"100s":0},{"Rank":25,"Player Name":"Mihir Dalia","Team Name":"SAMURAI STRIKERS","Mat":4,"Inns":4,"Runs":41,"Balls":75,"Highest":17,"N/O":0,"Avg":10.25,"SR":54.67,"4s":0,"6s":0,"50s":0,"100s":0},{"Rank":26,"Player Name":"Rushi Modi","Team Name":"Gladiators","Mat":4,"Inns":4,"Runs":40,"Balls":67,"Highest":18,"N/O":0,"Avg":10,"SR":59.7,"4s":0,"6s":0,"50s":0,"100s":0},{"Rank":27,"Player Name":"Yash Dalia","Team Name":"SKY SOARERS","Mat":4,"Inns":4,"Runs":36,"Balls":33,"Highest":"23*","N/O":2,"Avg":18,"SR":109.09,"4s":2,"6s":3,"50s":0,"100s":0},{"Rank":28,"Player Name":"Dhruvam M Mehta","Team Name":"PHOENIX","Mat":6,"Inns":4,"Runs":36,"Balls":44,"Highest":"21*","N/O":1,"Avg":12,"SR":81.82,"4s":1,"6s":1,"50s":0,"100s":0},{"Rank":29,"Player Name":"Sandeep Meel","Team Name":"Unicorns","Mat":3,"Inns":3,"Runs":35,"Balls":59,"Highest":26,"N/O":0,"Avg":11.67,"SR":59.32,"4s":1,"6s":1,"50s":0,"100s":0},{"Rank":30,"Player Name":"Shlok Bhavsar","Team Name":"SAMURAI STRIKERS","Mat":4,"Inns":4,"Runs":35,"Balls":39,"Highest":22,"N/O":0,"Avg":8.75,"SR":89.74,"4s":0,"6s":3,"50s":0,"100s":0}],"s2_bowl":[{"Rank":1,"Player Name":"Pranay Darji","Team Name":"EXPLOSIVE TITANS","Bowling Style":"Right-arm Leg Break","Mat":7,"Inns":7,"Overs":21,"Runs":74,"Wickets":8,"Highest":2,"Maidens":0,"Avg":9.25,"Econ":3.52,"SR":15.75},{"Rank":2,"Player Name":"Ankur Prajapati Acb 125","Team Name":"REAPERS","Bowling Style":"-","Mat":6,"Inns":6,"Overs":18,"Runs":84,"Wickets":7,"Highest":2,"Maidens":0,"Avg":12,"Econ":4.67,"SR":15.43},{"Rank":3,"Player Name":"Teerth","Team Name":"REAPERS","Bowling Style":"-","Mat":6,"Inns":6,"Overs":9.2,"Runs":59,"Wickets":7,"Highest":2,"Maidens":0,"Avg":8.43,"Econ":6.32,"SR":8},{"Rank":4,"Player Name":"Yash Dalia","Team Name":"SAMURAI STRIKERS","Bowling Style":"-","Mat":5,"Inns":5,"Overs":14.1,"Runs":63,"Wickets":6,"Highest":3,"Maidens":0,"Avg":10.5,"Econ":4.45,"SR":14.17},{"Rank":5,"Player Name":"Aayush Parikh","Team Name":"EXPLOSIVE TITANS","Bowling Style":"Right-arm Leg Break","Mat":7,"Inns":7,"Overs":20,"Runs":105,"Wickets":6,"Highest":2,"Maidens":1,"Avg":17.5,"Econ":5.25,"SR":20},{"Rank":6,"Player Name":"Dr Nisarg Savjiani","Team Name":"REAPERS","Bowling Style":"Right-arm medium","Mat":6,"Inns":6,"Overs":17,"Runs":91,"Wickets":6,"Highest":3,"Maidens":0,"Avg":15.17,"Econ":5.35,"SR":17},{"Rank":7,"Player Name":"Dimple Dalia","Team Name":"EXPLOSIVE TITANS","Bowling Style":"Right-arm Leg Break","Mat":7,"Inns":7,"Overs":9,"Runs":67,"Wickets":6,"Highest":3,"Maidens":0,"Avg":11.17,"Econ":7.44,"SR":9},{"Rank":8,"Player Name":"Madhav Mehta","Team Name":"PHOENIX","Bowling Style":"Right-arm Off Break","Mat":4,"Inns":4,"Overs":12,"Runs":58,"Wickets":5,"Highest":2,"Maidens":0,"Avg":11.6,"Econ":4.83,"SR":14.4},{"Rank":9,"Player Name":"Shlok Bhavsar","Team Name":"PHOENIX","Bowling Style":"Right-arm medium","Mat":4,"Inns":4,"Overs":9,"Runs":47,"Wickets":5,"Highest":2,"Maidens":0,"Avg":9.4,"Econ":5.22,"SR":10.8},{"Rank":10,"Player Name":"Vatsal Shah","Team Name":"GLADIATORS","Bowling Style":"Right-arm Off Break","Mat":5,"Inns":4,"Overs":11.4,"Runs":63,"Wickets":5,"Highest":2,"Maidens":0,"Avg":12.6,"Econ":5.4,"SR":14},{"Rank":11,"Player Name":"Kunal Kadakia","Team Name":"GLADIATORS","Bowling Style":"Right-arm medium","Mat":6,"Inns":6,"Overs":11.1,"Runs":53,"Wickets":4,"Highest":2,"Maidens":0,"Avg":13.25,"Econ":4.75,"SR":16.75},{"Rank":12,"Player Name":"Adarsh Shah","Team Name":"SKY SOARERS","Bowling Style":"Right-arm medium","Mat":4,"Inns":4,"Overs":8,"Runs":38,"Wickets":4,"Highest":2,"Maidens":0,"Avg":9.5,"Econ":4.75,"SR":12},{"Rank":13,"Player Name":"Yash","Team Name":"REAPERS","Bowling Style":"Right-arm medium","Mat":6,"Inns":6,"Overs":12,"Runs":61,"Wickets":4,"Highest":1,"Maidens":0,"Avg":15.25,"Econ":5.08,"SR":18},{"Rank":14,"Player Name":"Sunil Lavti","Team Name":"MAVERICKS","Bowling Style":"-","Mat":3,"Inns":3,"Overs":5.5,"Runs":32,"Wickets":4,"Highest":3,"Maidens":0,"Avg":8,"Econ":5.49,"SR":8.75},{"Rank":15,"Player Name":"Mitanshu Patel","Team Name":"UNICORNS","Bowling Style":"-","Mat":4,"Inns":3,"Overs":5,"Runs":29,"Wickets":4,"Highest":2,"Maidens":0,"Avg":7.25,"Econ":5.8,"SR":7.5},{"Rank":16,"Player Name":"Jayaraj Lukose","Team Name":"GLADIATORS","Bowling Style":"Right-arm medium","Mat":6,"Inns":6,"Overs":16.4,"Runs":97,"Wickets":4,"Highest":2,"Maidens":0,"Avg":24.25,"Econ":5.82,"SR":25},{"Rank":17,"Player Name":"Varsha Shah","Team Name":"REAPERS","Bowling Style":"-","Mat":4,"Inns":4,"Overs":7,"Runs":41,"Wickets":4,"Highest":2,"Maidens":0,"Avg":10.25,"Econ":5.86,"SR":10.5},{"Rank":18,"Player Name":"Arjun","Team Name":"SKY SOARERS","Bowling Style":"Right-arm medium","Mat":3,"Inns":3,"Overs":5.4,"Runs":34,"Wickets":4,"Highest":3,"Maidens":0,"Avg":8.5,"Econ":6,"SR":8.5},{"Rank":19,"Player Name":"Manas Mehta","Team Name":"EXPLOSIVE TITANS","Bowling Style":"Right-arm medium","Mat":7,"Inns":7,"Overs":13,"Runs":80,"Wickets":4,"Highest":1,"Maidens":0,"Avg":20,"Econ":6.15,"SR":19.5},{"Rank":20,"Player Name":"Meet","Team Name":"SAMURAI STRIKERS","Bowling Style":"Right-arm fast","Mat":5,"Inns":5,"Overs":13,"Runs":83,"Wickets":4,"Highest":2,"Maidens":0,"Avg":20.75,"Econ":6.38,"SR":19.5},{"Rank":21,"Player Name":"Hardik Modi","Team Name":"VENOM VIPERS","Bowling Style":"Right-arm Off Break","Mat":4,"Inns":4,"Overs":7,"Runs":50,"Wickets":4,"Highest":2,"Maidens":0,"Avg":12.5,"Econ":7.14,"SR":10.5},{"Rank":22,"Player Name":"Sandeep Meel","Team Name":"KNIGHTS","Bowling Style":"Right-arm medium","Mat":4,"Inns":4,"Overs":8.4,"Runs":44,"Wickets":3,"Highest":2,"Maidens":0,"Avg":14.67,"Econ":5.08,"SR":17.33},{"Rank":23,"Player Name":"Prashant Bhavsar","Team Name":"KNIGHTS","Bowling Style":"Right-arm fast","Mat":4,"Inns":4,"Overs":9.4,"Runs":51,"Wickets":3,"Highest":2,"Maidens":0,"Avg":17,"Econ":5.28,"SR":19.33},{"Rank":24,"Player Name":"Dhruvam M Mehta","Team Name":"VENOM VIPERS","Bowling Style":"-","Mat":4,"Inns":3,"Overs":8,"Runs":43,"Wickets":3,"Highest":1,"Maidens":1,"Avg":14.33,"Econ":5.38,"SR":16},{"Rank":25,"Player Name":"Jigar Thakker","Team Name":"UNICORNS","Bowling Style":"-","Mat":4,"Inns":4,"Overs":9,"Runs":49,"Wickets":3,"Highest":2,"Maidens":0,"Avg":16.33,"Econ":5.44,"SR":18},{"Rank":26,"Player Name":"Mihir Dalia","Team Name":"UNICORNS","Bowling Style":"-","Mat":4,"Inns":4,"Overs":10.5,"Runs":60,"Wickets":3,"Highest":2,"Maidens":0,"Avg":20,"Econ":5.54,"SR":21.67},{"Rank":27,"Player Name":"Pranav Sheth","Team Name":"SKY SOARERS","Bowling Style":"-","Mat":4,"Inns":4,"Overs":9,"Runs":52,"Wickets":3,"Highest":1,"Maidens":0,"Avg":17.33,"Econ":5.78,"SR":18},{"Rank":28,"Player Name":"Ronak Patel","Team Name":"MAVERICKS","Bowling Style":"Right-arm medium","Mat":4,"Inns":4,"Overs":7.4,"Runs":52,"Wickets":3,"Highest":3,"Maidens":0,"Avg":17.33,"Econ":6.78,"SR":15.33}],"s3_bowl":[{"Rank":1,"Player Name":"Kunal Sp","Team Name":"REAPERS","Bowling Style":"-","Mat":7,"Inns":7,"Overs":16.4,"Runs":103,"Wickets":10,"Highest":3,"Maidens":0,"Avg":10.3,"Econ":6.18,"SR":10},{"Rank":2,"Player Name":"Ronak Patel","Team Name":"EXPLOSIVE TITANS","Bowling Style":"Right-arm medium","Mat":5,"Inns":5,"Overs":10.5,"Runs":41,"Wickets":9,"Highest":3,"Maidens":1,"Avg":4.56,"Econ":3.78,"SR":7.22},{"Rank":3,"Player Name":"King Saglani","Team Name":"Unicorns","Bowling Style":"-","Mat":4,"Inns":4,"Overs":10,"Runs":38,"Wickets":9,"Highest":5,"Maidens":0,"Avg":4.22,"Econ":3.8,"SR":6.67},{"Rank":4,"Player Name":"Kiran Singh Rathod 111","Team Name":"SKY SOARERS","Bowling Style":"Right-arm medium","Mat":4,"Inns":3,"Overs":6.5,"Runs":30,"Wickets":8,"Highest":4,"Maidens":0,"Avg":3.75,"Econ":4.39,"SR":5.12},{"Rank":5,"Player Name":"Mukesh Sharma","Team Name":"SAMURAI STRIKERS","Bowling Style":"Right-arm medium","Mat":3,"Inns":3,"Overs":9,"Runs":37,"Wickets":7,"Highest":5,"Maidens":0,"Avg":5.29,"Econ":4.11,"SR":7.71},{"Rank":6,"Player Name":"Hardik Modi","Team Name":"EXPLOSIVE TITANS","Bowling Style":"Right-arm Off Break","Mat":6,"Inns":6,"Overs":16,"Runs":80,"Wickets":7,"Highest":4,"Maidens":0,"Avg":11.43,"Econ":5,"SR":13.71},{"Rank":7,"Player Name":"Yash Dalia","Team Name":"SKY SOARERS","Bowling Style":"-","Mat":4,"Inns":4,"Overs":10.3,"Runs":51,"Wickets":6,"Highest":3,"Maidens":0,"Avg":8.5,"Econ":4.86,"SR":10.5},{"Rank":8,"Player Name":"Jaimin Patel","Team Name":"KNIGHTS","Bowling Style":"Right-arm medium","Mat":4,"Inns":4,"Overs":12,"Runs":61,"Wickets":6,"Highest":2,"Maidens":0,"Avg":10.17,"Econ":5.08,"SR":12},{"Rank":9,"Player Name":"Prashant Bhavsar","Team Name":"VENOM VIPERS","Bowling Style":"Right-arm fast","Mat":5,"Inns":5,"Overs":12,"Runs":68,"Wickets":6,"Highest":2,"Maidens":0,"Avg":11.33,"Econ":5.67,"SR":12},{"Rank":10,"Player Name":"Chandresh Thakkar","Team Name":"MAVERICKS","Bowling Style":"Right-arm medium","Mat":4,"Inns":4,"Overs":10,"Runs":58,"Wickets":6,"Highest":3,"Maidens":0,"Avg":9.67,"Econ":5.8,"SR":10},{"Rank":11,"Player Name":"Pranav Sheth","Team Name":"EXPLOSIVE TITANS","Bowling Style":"-","Mat":5,"Inns":5,"Overs":13,"Runs":59,"Wickets":5,"Highest":2,"Maidens":0,"Avg":11.8,"Econ":4.54,"SR":15.6},{"Rank":12,"Player Name":"Anand Pratap","Team Name":"KNIGHTS","Bowling Style":"Right-arm medium","Mat":4,"Inns":4,"Overs":8,"Runs":37,"Wickets":5,"Highest":2,"Maidens":0,"Avg":7.4,"Econ":4.62,"SR":9.6},{"Rank":13,"Player Name":"Ankur Prajapati Acb 125","Team Name":"REAPERS","Bowling Style":"-","Mat":7,"Inns":7,"Overs":21,"Runs":105,"Wickets":5,"Highest":2,"Maidens":1,"Avg":21,"Econ":5,"SR":25.2},{"Rank":14,"Player Name":"Ronak Parikh","Team Name":"PHOENIX","Bowling Style":"Right-arm Leg Break","Mat":6,"Inns":6,"Overs":13.3,"Runs":78,"Wickets":5,"Highest":3,"Maidens":1,"Avg":15.6,"Econ":5.78,"SR":16.2},{"Rank":15,"Player Name":"Smit Patel","Team Name":"REAPERS","Bowling Style":"-","Mat":7,"Inns":7,"Overs":12.4,"Runs":76,"Wickets":5,"Highest":2,"Maidens":0,"Avg":15.2,"Econ":6,"SR":15.2},{"Rank":16,"Player Name":"Dr Nisarg Savjiani","Team Name":"REAPERS","Bowling Style":"Right-arm medium","Mat":7,"Inns":7,"Overs":15,"Runs":104,"Wickets":5,"Highest":2,"Maidens":0,"Avg":20.8,"Econ":6.93,"SR":18},{"Rank":17,"Player Name":"Harish Karnik","Team Name":"VENOM VIPERS","Bowling Style":"Right-arm Leg Break","Mat":5,"Inns":5,"Overs":13.4,"Runs":75,"Wickets":4,"Highest":1,"Maidens":0,"Avg":18.75,"Econ":5.49,"SR":20.5},{"Rank":18,"Player Name":"Pranay Darji","Team Name":"MAVERICKS","Bowling Style":"Right-arm Leg Break","Mat":4,"Inns":4,"Overs":12,"Runs":66,"Wickets":4,"Highest":3,"Maidens":0,"Avg":16.5,"Econ":5.5,"SR":18},{"Rank":19,"Player Name":"Shlok Bhavsar","Team Name":"SAMURAI STRIKERS","Bowling Style":"Right-arm medium","Mat":4,"Inns":4,"Overs":11.1,"Runs":65,"Wickets":4,"Highest":2,"Maidens":0,"Avg":16.25,"Econ":5.82,"SR":16.75},{"Rank":20,"Player Name":"Yugrajsinh Rathod","Team Name":"Unicorns","Bowling Style":"Right-arm Leg Break","Mat":4,"Inns":4,"Overs":9.5,"Runs":39,"Wickets":3,"Highest":2,"Maidens":0,"Avg":13,"Econ":3.97,"SR":19.67},{"Rank":21,"Player Name":"Abhishek","Team Name":"SKY SOARERS","Bowling Style":"Right-arm fast","Mat":4,"Inns":3,"Overs":6,"Runs":27,"Wickets":3,"Highest":2,"Maidens":1,"Avg":9,"Econ":4.5,"SR":12},{"Rank":22,"Player Name":"Dcl Nikunj Patel","Team Name":"Gladiators","Bowling Style":"-","Mat":4,"Inns":4,"Overs":12,"Runs":56,"Wickets":3,"Highest":2,"Maidens":1,"Avg":18.67,"Econ":4.67,"SR":24},{"Rank":23,"Player Name":"Hetal Parikh","Team Name":"KNIGHTS","Bowling Style":"Right-arm fast","Mat":4,"Inns":4,"Overs":4,"Runs":19,"Wickets":3,"Highest":1,"Maidens":0,"Avg":6.33,"Econ":4.75,"SR":8},{"Rank":24,"Player Name":"Atharv","Team Name":"REAPERS","Bowling Style":"-","Mat":7,"Inns":6,"Overs":5.1,"Runs":27,"Wickets":3,"Highest":2,"Maidens":0,"Avg":9,"Econ":5.23,"SR":10.33},{"Rank":25,"Player Name":"Raviraj Parmar","Team Name":"VENOM VIPERS","Bowling Style":"Slow left-arm orthodox","Mat":5,"Inns":5,"Overs":13,"Runs":83,"Wickets":3,"Highest":1,"Maidens":0,"Avg":27.67,"Econ":6.38,"SR":26},{"Rank":26,"Player Name":"Medansh","Team Name":"EXPLOSIVE TITANS","Bowling Style":"-","Mat":2,"Inns":2,"Overs":2.3,"Runs":23,"Wickets":3,"Highest":3,"Maidens":0,"Avg":7.67,"Econ":9.2,"SR":5}]}
+// ─── Season 4 Player List ────────────────────────────────────────────────────
+const S4_PLAYERS = [
+  { name: "Aarav Patel", tshirt: "AARAV", category: "Player", gender: "Male", age: "6-10 years" },
+  { name: "Abhay Vaidya", tshirt: "Capt Abhay", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Abhishek Pathania", tshirt: "PATS", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Abhyoday Ranjan", tshirt: "Abby 18", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Adarsh Verma", tshirt: "ADARSH", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Ajendrasinh Rathod", tshirt: "AJENDRASINH", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Alok Ratre", tshirt: "ALOK", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Amey Sule", tshirt: "Amey Sule", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Anand Pratap", tshirt: "Rana", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Ankur Prajapati", tshirt: "Ankur", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Arnav Singh Pathania", tshirt: "Arnav Pathania", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Arpit Patel", tshirt: "AP", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Ashok", tshirt: "Ashok", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Atharv Parashar", tshirt: "Atharv", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Avyukt Sule", tshirt: "Avyukt Sule", category: "Player", gender: "Male", age: "6-10 years" },
+  { name: "Ayan Ratre", tshirt: "AYAN", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Bharat Chaudhary", tshirt: "CHAUDHARY", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Bhavi", tshirt: "Bhavi", category: "Player", gender: "Female", age: "Above 10 years" },
+  { name: "Bhavya", tshirt: "Bhavya", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Chandresh Thakkar", tshirt: "CHANDRESH", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Darshna Saglani", tshirt: "Darshna", category: "Player", gender: "Female", age: "Above 10 years" },
+  { name: "Dhaval Savaliya", tshirt: "Dhaval", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Dhriti Darji", tshirt: "DHRITI", category: "Player", gender: "Female", age: "6-10 years" },
+  { name: "Dhruvam", tshirt: "Mehta", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Dhun Bhardwaj", tshirt: "DHUN", category: "Player", gender: "Female", age: "Above 10 years" },
+  { name: "Dr. Ronak Patel", tshirt: "Dr. RONAK", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Dr. Apurva Gupta", tshirt: "Apurva", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Ghanshyambhai Patel", tshirt: "GT", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Hardik Modi", tshirt: "HARDIK", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Harish Karnik", tshirt: "HARISH", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Harpalsinh Jadeja", tshirt: "HRJ", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Hawan Chouhan", tshirt: "Hawan", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Hridaan Vyas", tshirt: "Hridaan Vyas", category: "Player", gender: "Male", age: "6-10 years" },
+  { name: "Ishan Patel", tshirt: "ISHU 67", category: "Player", gender: "Male", age: "6-10 years" },
+  { name: "Jaimin Patel", tshirt: "Jaimin", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Jainil Patel", tshirt: "JAINIL 18", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Jaival Pandya", tshirt: "Jaival", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Jasvantsinh Gohil", tshirt: "GOHIL", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "JayRaj Lukose", tshirt: "JayRaj Lukose", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Jayrajsinh Gohil", tshirt: "Jayrajsinh", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Jianna JayRaj", tshirt: "Jianna", category: "Player", gender: "Female", age: "Above 10 years" },
+  { name: "Jigar Thakker", tshirt: "JIGAR", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Karan Saglani", tshirt: "Karan", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Ketan Dave", tshirt: "Dave", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Khyati Sevak", tshirt: "Khyati", category: "Player", gender: "Female", age: "Above 10 years" },
+  { name: "Kiransinh Rathod", tshirt: "Rathod", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Kruti", tshirt: "Kruti", category: "Player", gender: "Female", age: "Above 10 years" },
+  { name: "Kunjan Patel", tshirt: "Kunjan", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Maalavsinh Gohil", tshirt: "Maalavsinh", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Madhav", tshirt: "M M", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Manan Shah", tshirt: "Manan", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Manas", tshirt: "Manny", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Mann Bhavsar", tshirt: "ITS MANN", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Mann Patel", tshirt: "Mann", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Manthan Prajapati", tshirt: "Manthan", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Medhansh Parekh", tshirt: "Medhansh", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Mehul Sohani", tshirt: "MEHUL", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Mihir Dalia", tshirt: "Mihir", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Mishika Thakker", tshirt: "MISHIKA", category: "Player", gender: "Female", age: "Above 10 years" },
+  { name: "Mithil Parekh", tshirt: "Mithil", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Mukul Goyal", tshirt: "Riyaarth", category: "Player", gender: "Male", age: "6-10 years" },
+  { name: "Narendra Bhardwaj", tshirt: "NARENDRA", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Neelmadhavsinh Jadeja", tshirt: "NHJ", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Nikunj Patel", tshirt: "Nikunj", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Payal Thakker", tshirt: "PAYAL", category: "Player", gender: "Female", age: "Above 10 years" },
+  { name: "Praful G Trivedi", tshirt: "Pintu -17", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Pranav Sheth", tshirt: "SHETH", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Pranay Darji", tshirt: "PRANAY", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Pratik", tshirt: "Pratik 03", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Rahil Saglani", tshirt: "RAHIL", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Raj Shah", tshirt: "Raj", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Rakshit P Trivedi", tshirt: "Rakshit 03", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Raviraj Parmar", tshirt: "Raviraj", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Rishi Saglani", tshirt: "RISHI", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Rushi Darji", tshirt: "RUSHI", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Rutuj", tshirt: "Rutuj", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Shaurin Patel", tshirt: "VEXMA", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Shlok Bhavsar", tshirt: "Shloky", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Smit Patel", tshirt: "SMIT", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Tirth Patel", tshirt: "Tirth", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Umesh Tiwari", tshirt: "Umesh", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Vaibhav Singh", tshirt: "Vasu", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Vatsal Shah", tshirt: "Vatsal", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Vibhav", tshirt: "Vasu", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Vihaan Dalia", tshirt: "Dalia", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Vikas Sharma", tshirt: "VIKAS", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Viral Sevak", tshirt: "Viral", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Vrusha Ashish Mehta", tshirt: "VRUSHA", category: "Player", gender: "Female", age: "Above 10 years" },
+  { name: "Yash Dalia", tshirt: "Yash", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Yashrajsinh Gohil", tshirt: "yashrajsinh", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Prashant Bhavsar", tshirt: "Pointy", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Dr Nisarg Savjiani", tshirt: "NISARG", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Malav Agarwal", tshirt: "MALAV", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Dhritya Agarwal", tshirt: "DHRITYA", category: "Player", gender: "Male", age: "6-10 years" },
+  { name: "Dhyey Patel", tshirt: "Dhyey", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Aarna Patel", tshirt: "AARNA", category: "Player", gender: "Female", age: "Above 10 years" },
+  { name: "Jignesh Shah", tshirt: "Jignesh Shah", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Hitansh Shah", tshirt: "Hitansh Shah", category: "Player", gender: "Male", age: "Above 10 years" },
+  { name: "Dhaval", tshirt: "X", category: "Team Owner", gender: "Male", age: "Above 10 years" },
+  { name: "Jitendrasinh Gohil", tshirt: "Jitendrasinh", category: "Team Owner", gender: "Male", age: "Above 10 years" },
+  { name: "Ashish Ranjan", tshirt: "Ashish", category: "Team Owner", gender: "Male", age: "Above 10 years" },
+  { name: "Karan Dayalani", tshirt: "KARAN DAYALANI", category: "Team Owner", gender: "Male", age: "Above 10 years" },
+  { name: "Madhu Sharma", tshirt: "MADHU", category: "Team Owner", gender: "Female", age: "Above 10 years" },
+  { name: "Rinkesh Patel", tshirt: "RINKESH", category: "Team Owner", gender: "Male", age: "Above 10 years" },
+  { name: "Yugrajsinh Rathod", tshirt: "YUGRAJ", category: "Team Owner", gender: "Male", age: "Above 10 years" },
+  { name: "Harish Patel", tshirt: "HP", category: "Team Owner", gender: "Male", age: "Above 10 years" },
+  { name: "Abishek Agarwal", tshirt: "Abishek Agarwal", category: "Team Owner", gender: "Male", age: "Above 10 years" },
+]
 
-const C = {
-  bg: '#0A0E2A', card: '#0F1640', cyan: '#00D4FF', red: '#CC2200',
-  text: '#fff', muted: '#8899CC', border: 'rgba(0,212,255,0.2)'
-}
-
+// ─── Styles ──────────────────────────────────────────────────────────────────
 const TAB_BTN = (active) => ({
   padding: '8px 18px', borderRadius: '6px', cursor: 'pointer',
   fontFamily: 'inherit', fontWeight: '700', fontSize: '13px', letterSpacing: '1px',
-  border: active ? 'none' : `1px solid ${C.border}`,
-  background: active ? C.red : 'transparent',
-  color: active ? '#fff' : C.muted,
+  border: active ? 'none' : `1px solid rgba(0,212,255,0.2)`,
+  background: active ? '#CC2200' : 'transparent',
+  color: active ? '#fff' : '#8899CC',
   transition: 'all 0.15s'
 })
 
+const S4_TAB_BTN = (active) => ({
+  padding: '8px 18px', borderRadius: '6px', cursor: 'pointer',
+  fontFamily: 'inherit', fontWeight: '700', fontSize: '13px', letterSpacing: '1px',
+  border: active ? 'none' : `1px solid rgba(255,215,0,0.4)`,
+  background: active ? 'linear-gradient(135deg, #FFD700, #FFA500)' : 'rgba(255,215,0,0.06)',
+  color: active ? '#0A0E2A' : '#FFD700',
+  transition: 'all 0.15s',
+  boxShadow: active ? '0 0 16px rgba(255,215,0,0.4)' : 'none',
+})
+
+const TH = ({ children, left }) => (
+  <th style={{
+    padding: '12px 12px', color: '#8899CC', fontWeight: '700',
+    letterSpacing: '1px', fontSize: '11px',
+    textAlign: left ? 'left' : 'center',
+    whiteSpace: 'nowrap', position: 'sticky', top: 0,
+    background: '#0a1030', borderBottom: '2px solid #00D4FF',
+    zIndex: 2
+  }}>{children}</th>
+)
+
+// ─── Stats Tables ─────────────────────────────────────────────────────────────
 function MvpTable({ data }) {
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-        <thead>
-          <tr style={{ borderBottom: `2px solid ${C.cyan}` }}>
-            {['SR No.','Rank','Player','Team','Mat','Total','Bat','Bowl','Field'].map(h => (
-              <th key={h} style={{ padding: '10px 12px', color: C.muted, fontWeight: '700', letterSpacing: '1px', textAlign: h === 'Player' || h === 'Team' ? 'left' : 'center', whiteSpace: 'nowrap' }}>{h}</th>
-            ))}
+    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+      <thead>
+        <tr>
+          <TH>#</TH><TH>Rank</TH><TH left>Player</TH><TH left>Team</TH>
+          <TH>Mat</TH><TH>Total</TH><TH>Bat</TH><TH>Bowl</TH><TH>Field</TH>
+        </tr>
+      </thead>
+      <tbody>
+        {data.map((r, i) => (
+          <tr key={i} style={{ borderBottom: '1px solid rgba(0,212,255,0.07)', background: i%2===0?'rgba(0,212,255,0.02)':'transparent' }}>
+            <td style={{padding:'9px 12px',color:'rgba(0,212,255,0.4)',textAlign:'center',fontSize:'12px'}}>{i+1}</td>
+            <td style={{padding:'9px 12px',color:r.Rank!=='-'?'#00D4FF':'#8899CC',fontWeight:'700',textAlign:'center'}}>{r.Rank}</td>
+            <td style={{padding:'9px 12px',color:'#fff',fontWeight:'600',whiteSpace:'nowrap'}}>{r['Player Name']}</td>
+            <td style={{padding:'9px 12px',color:'#8899CC',fontSize:'12px',whiteSpace:'nowrap'}}>{r['Team Name']}</td>
+            <td style={{padding:'9px 12px',color:'#fff',textAlign:'center'}}>{r.Mat}</td>
+            <td style={{padding:'9px 12px',color:'#FFA500',fontWeight:'700',textAlign:'center'}}>{r.Total?.toFixed(2)}</td>
+            <td style={{padding:'9px 12px',color:'#00D4FF',textAlign:'center'}}>{r.Batting?.toFixed(2)}</td>
+            <td style={{padding:'9px 12px',color:'#FF6B6B',textAlign:'center'}}>{r.Bowling?.toFixed(2)}</td>
+            <td style={{padding:'9px 12px',color:'#90EE90',textAlign:'center'}}>{r.Fielding?.toFixed(2)}</td>
           </tr>
-        </thead>
-        <tbody>
-          {data.map((r, i) => (
-            <tr key={i} style={{ borderBottom: `1px solid rgba(0,212,255,0.07)`, background: i % 2 === 0 ? 'rgba(0,212,255,0.02)' : 'transparent' }}>
-              <td style={{ padding: '9px 12px', color: 'rgba(0,212,255,0.4)', textAlign: 'center' }}>{i + 1}</td>
-              <td style={{ padding: '9px 12px', color: r.Rank === '-' ? C.muted : C.cyan, fontWeight: '700', textAlign: 'center' }}>{r.Rank}</td>
-              <td style={{ padding: '9px 12px', color: C.text, fontWeight: '600' }}>{r['Player Name']}</td>
-              <td style={{ padding: '9px 12px', color: C.muted, fontSize: '12px' }}>{r['Team Name']}</td>
-              <td style={{ padding: '9px 12px', color: C.text, textAlign: 'center' }}>{r.Mat}</td>
-              <td style={{ padding: '9px 12px', color: '#FFA500', fontWeight: '700', textAlign: 'center' }}>{r.Total?.toFixed(2)}</td>
-              <td style={{ padding: '9px 12px', color: C.cyan, textAlign: 'center' }}>{r.Batting?.toFixed(2)}</td>
-              <td style={{ padding: '9px 12px', color: '#FF6B6B', textAlign: 'center' }}>{r.Bowling?.toFixed(2)}</td>
-              <td style={{ padding: '9px 12px', color: '#90EE90', textAlign: 'center' }}>{r.Fielding?.toFixed(2)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+        ))}
+      </tbody>
+    </table>
   )
 }
 
 function BatTable({ data }) {
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-        <thead>
-          <tr style={{ borderBottom: `2px solid ${C.cyan}` }}>
-            {['Rank','Player','Team','Mat','Inns','Runs','Balls','HS','N/O','Avg','SR','4s','6s','50s','100s'].map(h => (
-              <th key={h} style={{ padding: '10px 10px', color: C.muted, fontWeight: '700', letterSpacing: '1px', textAlign: h === 'Player' || h === 'Team' ? 'left' : 'center', whiteSpace: 'nowrap' }}>{h}</th>
-            ))}
+    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+      <thead>
+        <tr>
+          <TH>Rank</TH><TH left>Player</TH><TH left>Team</TH>
+          <TH>Mat</TH><TH>Inns</TH><TH>Runs</TH><TH>Balls</TH><TH>HS</TH>
+          <TH>N/O</TH><TH>Avg</TH><TH>SR</TH><TH>4s</TH><TH>6s</TH><TH>50s</TH><TH>100s</TH>
+        </tr>
+      </thead>
+      <tbody>
+        {data.map((r, i) => (
+          <tr key={i} style={{ borderBottom: '1px solid rgba(0,212,255,0.07)', background: i%2===0?'rgba(0,212,255,0.02)':'transparent' }}>
+            <td style={{padding:'9px 12px',color:'#00D4FF',fontWeight:'700',textAlign:'center'}}>{r.Rank}</td>
+            <td style={{padding:'9px 12px',color:'#fff',fontWeight:'600',whiteSpace:'nowrap'}}>{r['Player Name']}</td>
+            <td style={{padding:'9px 12px',color:'#8899CC',fontSize:'12px',whiteSpace:'nowrap'}}>{r['Team Name']}</td>
+            <td style={{padding:'9px 12px',color:'#fff',textAlign:'center'}}>{r.Mat}</td>
+            <td style={{padding:'9px 12px',color:'#fff',textAlign:'center'}}>{r.Inns}</td>
+            <td style={{padding:'9px 12px',color:'#FFA500',fontWeight:'700',textAlign:'center'}}>{r.Runs}</td>
+            <td style={{padding:'9px 12px',color:'#8899CC',textAlign:'center'}}>{r.Balls}</td>
+            <td style={{padding:'9px 12px',color:'#FF6B6B',fontWeight:'700',textAlign:'center'}}>{r.Highest}</td>
+            <td style={{padding:'9px 12px',color:'#fff',textAlign:'center'}}>{r['N/O']}</td>
+            <td style={{padding:'9px 12px',color:'#00D4FF',fontWeight:'700',textAlign:'center'}}>{r.Avg}</td>
+            <td style={{padding:'9px 12px',color:'#FF6B6B',fontWeight:'700',textAlign:'center'}}>{r.SR}</td>
+            <td style={{padding:'9px 12px',color:'#fff',textAlign:'center'}}>{r['4s']}</td>
+            <td style={{padding:'9px 12px',color:'#fff',textAlign:'center'}}>{r['6s']}</td>
+            <td style={{padding:'9px 12px',color:'#fff',textAlign:'center'}}>{r['50s']}</td>
+            <td style={{padding:'9px 12px',color:'#fff',textAlign:'center'}}>{r['100s']}</td>
           </tr>
-        </thead>
-        <tbody>
-          {data.map((r, i) => (
-            <tr key={i} style={{ borderBottom: `1px solid rgba(0,212,255,0.07)`, background: i % 2 === 0 ? 'rgba(0,212,255,0.02)' : 'transparent' }}>
-              <td style={{ padding: '9px 10px', color: C.cyan, fontWeight: '700', textAlign: 'center' }}>{r.Rank}</td>
-              <td style={{ padding: '9px 10px', color: C.text, fontWeight: '600' }}>{r['Player Name']}</td>
-              <td style={{ padding: '9px 10px', color: C.muted, fontSize: '12px' }}>{r['Team Name']}</td>
-              {['Mat','Inns','Runs','Balls'].map(k => <td key={k} style={{ padding: '9px 10px', color: C.text, textAlign: 'center' }}>{r[k]}</td>)}
-              <td style={{ padding: '9px 10px', color: '#FFA500', fontWeight: '700', textAlign: 'center' }}>{r.Highest}</td>
-              <td style={{ padding: '9px 10px', color: C.text, textAlign: 'center' }}>{r['N/O']}</td>
-              <td style={{ padding: '9px 10px', color: C.cyan, fontWeight: '700', textAlign: 'center' }}>{r.Avg}</td>
-              <td style={{ padding: '9px 10px', color: '#FF6B6B', fontWeight: '700', textAlign: 'center' }}>{r.SR}</td>
-              {['4s','6s','50s','100s'].map(k => <td key={k} style={{ padding: '9px 10px', color: C.text, textAlign: 'center' }}>{r[k]}</td>)}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+        ))}
+      </tbody>
+    </table>
   )
 }
 
 function BowlTable({ data }) {
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-        <thead>
-          <tr style={{ borderBottom: `2px solid ${C.cyan}` }}>
-            {['Rank','Player','Team','Style','Mat','Inns','Overs','Runs','Wkts','Best','Mdns','Avg','Econ','SR'].map(h => (
-              <th key={h} style={{ padding: '10px 10px', color: C.muted, fontWeight: '700', letterSpacing: '1px', textAlign: ['Player','Team','Style'].includes(h) ? 'left' : 'center', whiteSpace: 'nowrap' }}>{h}</th>
-            ))}
+    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+      <thead>
+        <tr>
+          <TH>Rank</TH><TH left>Player</TH><TH left>Team</TH><TH left>Style</TH>
+          <TH>Mat</TH><TH>Inns</TH><TH>Overs</TH><TH>Runs</TH><TH>Wkts</TH>
+          <TH>Best</TH><TH>Mdns</TH><TH>Avg</TH><TH>Econ</TH><TH>SR</TH>
+        </tr>
+      </thead>
+      <tbody>
+        {data.map((r, i) => (
+          <tr key={i} style={{ borderBottom: '1px solid rgba(0,212,255,0.07)', background: i%2===0?'rgba(0,212,255,0.02)':'transparent' }}>
+            <td style={{padding:'9px 12px',color:'#00D4FF',fontWeight:'700',textAlign:'center'}}>{r.Rank}</td>
+            <td style={{padding:'9px 12px',color:'#fff',fontWeight:'600',whiteSpace:'nowrap'}}>{r['Player Name']}</td>
+            <td style={{padding:'9px 12px',color:'#8899CC',fontSize:'12px',whiteSpace:'nowrap'}}>{r['Team Name']}</td>
+            <td style={{padding:'9px 12px',color:'#8899CC',fontSize:'11px',whiteSpace:'nowrap'}}>{r['Bowling Style']&&r['Bowling Style']!=='-'?r['Bowling Style']:'—'}</td>
+            <td style={{padding:'9px 12px',color:'#fff',textAlign:'center'}}>{r.Mat}</td>
+            <td style={{padding:'9px 12px',color:'#fff',textAlign:'center'}}>{r.Inns}</td>
+            <td style={{padding:'9px 12px',color:'#fff',textAlign:'center'}}>{r.Overs}</td>
+            <td style={{padding:'9px 12px',color:'#fff',textAlign:'center'}}>{r.Runs}</td>
+            <td style={{padding:'9px 12px',color:'#FFA500',fontWeight:'700',textAlign:'center'}}>{r.Wickets}</td>
+            <td style={{padding:'9px 12px',color:'#FF6B6B',textAlign:'center'}}>{r.Highest}</td>
+            <td style={{padding:'9px 12px',color:'#fff',textAlign:'center'}}>{r.Maidens}</td>
+            <td style={{padding:'9px 12px',color:'#00D4FF',fontWeight:'700',textAlign:'center'}}>{r.Avg}</td>
+            <td style={{padding:'9px 12px',color:'#90EE90',fontWeight:'700',textAlign:'center'}}>{r.Econ}</td>
+            <td style={{padding:'9px 12px',color:'#fff',textAlign:'center'}}>{r.SR}</td>
           </tr>
-        </thead>
-        <tbody>
-          {data.map((r, i) => (
-            <tr key={i} style={{ borderBottom: `1px solid rgba(0,212,255,0.07)`, background: i % 2 === 0 ? 'rgba(0,212,255,0.02)' : 'transparent' }}>
-              <td style={{ padding: '9px 10px', color: C.cyan, fontWeight: '700', textAlign: 'center' }}>{r.Rank}</td>
-              <td style={{ padding: '9px 10px', color: C.text, fontWeight: '600' }}>{r['Player Name']}</td>
-              <td style={{ padding: '9px 10px', color: C.muted, fontSize: '12px' }}>{r['Team Name']}</td>
-              <td style={{ padding: '9px 10px', color: C.muted, fontSize: '11px' }}>{r['Bowling Style'] && r['Bowling Style'] !== '-' ? r['Bowling Style'] : '—'}</td>
-              {['Mat','Inns','Overs','Runs'].map(k => <td key={k} style={{ padding: '9px 10px', color: C.text, textAlign: 'center' }}>{r[k]}</td>)}
-              <td style={{ padding: '9px 10px', color: '#FFA500', fontWeight: '700', textAlign: 'center' }}>{r.Wickets}</td>
-              <td style={{ padding: '9px 10px', color: '#FF6B6B', textAlign: 'center' }}>{r.Highest}</td>
-              <td style={{ padding: '9px 10px', color: C.text, textAlign: 'center' }}>{r.Maidens}</td>
-              <td style={{ padding: '9px 10px', color: C.cyan, fontWeight: '700', textAlign: 'center' }}>{r.Avg}</td>
-              <td style={{ padding: '9px 10px', color: '#90EE90', fontWeight: '700', textAlign: 'center' }}>{r.Econ}</td>
-              <td style={{ padding: '9px 10px', color: C.text, textAlign: 'center' }}>{r.SR}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        ))}
+      </tbody>
+    </table>
+  )
+}
+
+// ─── Season 4 Roster ──────────────────────────────────────────────────────────
+function S4RosterCard({ player, index }) {
+  return (
+    <div style={{
+      background: 'rgba(0,212,255,0.04)',
+      border: '1px solid rgba(0,212,255,0.12)',
+      borderRadius: '10px',
+      padding: '12px 16px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
+    }}>
+      <div style={{
+        minWidth: '28px', height: '28px', borderRadius: '50%',
+        background: 'rgba(0,212,255,0.1)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: '11px', fontWeight: '700', color: '#00D4FF',
+      }}>{index + 1}</div>
+      <div style={{ color: '#fff', fontWeight: '600', fontSize: '14px' }}>{player.name}</div>
     </div>
   )
 }
 
-export default function StatsPage() {
-  const router = useRouter()
-  const [season, setSeason] = useState('2')
-  const [tab, setTab] = useState('mvp')
-
-  const key = `s${season}_${tab}`
-  const tableData = DATA[key] || []
+function S4RosterView({ search = '' }) {
+  const allPlayers = search.trim()
+    ? S4_PLAYERS.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))
+    : S4_PLAYERS
 
   return (
-    <div style={{ minHeight: '100vh', background: C.bg }}>
+    <div>
+      {/* Season 4 Hero Banner */}
+      <div style={{
+        margin: '0 0 24px',
+        background: 'linear-gradient(135deg, rgba(255,215,0,0.12) 0%, rgba(255,165,0,0.06) 50%, rgba(204,34,0,0.08) 100%)',
+        border: '1px solid rgba(255,215,0,0.3)',
+        borderRadius: '16px',
+        padding: '24px 28px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        flexWrap: 'wrap', gap: '16px',
+        position: 'relative', overflow: 'hidden',
+      }}>
+        <div style={{
+          position: 'absolute', top: '-40px', right: '-40px',
+          width: '160px', height: '160px', borderRadius: '50%',
+          background: 'rgba(255,215,0,0.08)', pointerEvents: 'none',
+        }} />
+        <div>
+          <div style={{ color: '#FFD700', fontSize: '11px', letterSpacing: '3px', fontWeight: '700', marginBottom: '6px' }}>
+            ✦ UPCOMING SEASON
+          </div>
+          <div style={{ color: '#fff', fontSize: '28px', fontWeight: '900', letterSpacing: '3px', lineHeight: 1 }}>
+            CPL SEASON 4
+          </div>
+          <div style={{ color: '#FFA500', fontSize: '13px', marginTop: '6px', letterSpacing: '1px' }}>
+            REGISTERED PARTICIPANTS
+          </div>
+        </div>
+        <div style={{
+          background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,215,0,0.4)',
+          borderRadius: '10px', padding: '14px 24px', textAlign: 'center',
+        }}>
+          <div style={{ color: '#FFD700', fontSize: '36px', fontWeight: '900', lineHeight: 1 }}>
+            {allPlayers.length}{search ? ` / ${S4_PLAYERS.length}` : ''}
+          </div>
+          <div style={{ color: '#8899CC', fontSize: '11px', letterSpacing: '2px', marginTop: '4px' }}>
+            {search ? 'MATCHES' : 'REGISTERED'}
+          </div>
+        </div>
+      </div>
+
+      {/* Player Grid */}
+      {allPlayers.length === 0
+        ? <div style={{ padding:'40px', textAlign:'center', color:'#8899CC', background:'rgba(255,215,0,0.03)', borderRadius:'12px', border:'1px solid rgba(255,215,0,0.1)' }}>
+            No players found for "{search}"
+          </div>
+        : <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+            gap: '8px',
+          }}>
+            {allPlayers.map((player, i) => (
+              <S4RosterCard key={i} player={player} index={i} />
+            ))}
+          </div>
+      }
+
+      <div style={{
+        marginTop: '20px', padding: '12px 16px',
+        background: 'rgba(255,215,0,0.05)', border: '1px solid rgba(255,215,0,0.15)',
+        borderRadius: '8px', color: '#8899CC', fontSize: '12px', textAlign: 'center'
+      }}>
+        ✦ &nbsp; Season 4 stats will be updated as matches are played
+      </div>
+    </div>
+  )
+}
+
+// ─── Search Box ───────────────────────────────────────────────────────────────
+function SearchBox({ value, onChange, gold }) {
+  return (
+    <div style={{ position: 'relative', marginBottom: '20px' }}>
+      <span style={{
+        position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)',
+        color: '#8899CC', fontSize: '15px', pointerEvents: 'none',
+      }}>🔍</span>
+      <input
+        type="text"
+        placeholder="Search by name..."
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        style={{
+          width: '100%', boxSizing: 'border-box',
+          padding: '11px 40px 11px 40px',
+          background: gold ? 'rgba(255,215,0,0.05)' : 'rgba(0,212,255,0.05)',
+          border: `1px solid ${gold ? 'rgba(255,215,0,0.3)' : 'rgba(0,212,255,0.25)'}`,
+          borderRadius: '8px',
+          color: '#fff', fontSize: '14px', fontFamily: 'inherit',
+          outline: 'none',
+        }}
+      />
+      {value && (
+        <button onClick={() => onChange('')} style={{
+          position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)',
+          background: 'none', border: 'none', color: '#8899CC', cursor: 'pointer',
+          fontSize: '16px', lineHeight: 1, padding: 0,
+        }}>✕</button>
+      )}
+    </div>
+  )
+}
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
+export default function StatsPage() {
+  const router = useRouter()
+  const [season, setSeason] = useState('4')
+  const [tab, setTab] = useState('roster')
+  const [search, setSearch] = useState('')
+
+  const isS4 = season === '4'
+  const key = `s${season}_${tab}`
+  const rawTableData = (!isS4 && tab !== 'roster') ? (CPL_DATA[key] || []) : []
+  const tableData = search.trim()
+    ? rawTableData.filter(r => r['Player Name']?.toLowerCase().includes(search.toLowerCase()))
+    : rawTableData
+  const tableLabel = tab === 'mvp' ? 'MVP LEADERBOARD' : tab === 'bat' ? 'BATTING LEADERBOARD' : 'BOWLING LEADERBOARD'
+
+  const handleSeasonChange = (s, t) => { setSeason(s); setTab(t); setSearch('') }
+  const handleTabChange = (t) => { setTab(t); setSearch('') }
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#0A0E2A' }}>
       <Navbar title="SEASON STATS" />
 
-      <div style={{ maxWidth: '1300px', margin: '0 auto', padding: '32px 24px' }}>
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '32px 24px' }}>
 
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px', flexWrap: 'wrap', gap: '16px' }}>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'28px', flexWrap:'wrap', gap:'16px' }}>
           <div>
-            <div style={{ color: C.muted, fontSize: '12px', letterSpacing: '3px', marginBottom: '4px' }}>CLUBLIFE PREMIER LEAGUE</div>
-            <div style={{ color: C.text, fontSize: '26px', fontWeight: '700', letterSpacing: '2px' }}>
-              SEASON STATISTICS
-            </div>
+            <div style={{ color:'#8899CC', fontSize:'12px', letterSpacing:'3px', marginBottom:'4px' }}>CLUBLIFE PREMIER LEAGUE</div>
+            <div style={{ color:'#fff', fontSize:'26px', fontWeight:'700', letterSpacing:'2px' }}>SEASON STATISTICS</div>
           </div>
-          <div style={{ display: 'inline-block', background: C.red, padding: '6px 20px', borderRadius: '4px' }}>
-            <span style={{ fontWeight: '700', fontSize: '20px', letterSpacing: '3px' }}>CPL</span>
+          <div style={{ background:'#CC2200', padding:'6px 20px', borderRadius:'4px' }}>
+            <span style={{ fontWeight:'700', fontSize:'20px', letterSpacing:'3px' }}>CPL</span>
           </div>
         </div>
 
-        {/* Season Selector */}
-        <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', alignItems: 'center' }}>
-          <span style={{ color: C.muted, fontSize: '12px', letterSpacing: '2px' }}>SEASON</span>
-          {['2', '3'].map(s => (
-            <button key={s} onClick={() => setSeason(s)} style={TAB_BTN(season === s)}>
+        {/* Season Toggle */}
+        <div style={{ display:'flex', gap:'12px', marginBottom:'20px', alignItems:'center', flexWrap:'wrap' }}>
+          <span style={{ color:'#8899CC', fontSize:'12px', letterSpacing:'2px' }}>SEASON</span>
+          {['2','3'].map(s => (
+            <button key={s} onClick={() => handleSeasonChange(s, 'mvp')} style={TAB_BTN(season===s && !isS4)}>
               SEASON {s}
             </button>
           ))}
+          <button onClick={() => handleSeasonChange('4', 'roster')} style={S4_TAB_BTN(season==='4')}>
+            ✦ SEASON 4
+          </button>
         </div>
 
-        {/* Stat Type Tabs */}
-        <div style={{ display: 'flex', gap: '10px', marginBottom: '24px' }}>
-          {[['mvp','🏆 MVP'], ['bat','🏏 BATTING'], ['bowl','⚾ BOWLING']].map(([k, label]) => (
-            <button key={k} onClick={() => setTab(k)} style={TAB_BTN(tab === k)}>
-              {label}
-            </button>
-          ))}
-        </div>
-
-        {/* Table Card */}
-        <div style={{
-          background: C.card, borderRadius: '16px',
-          border: `1px solid ${C.border}`, overflow: 'hidden'
-        }}>
-          {/* Table header strip */}
-          <div style={{
-            padding: '16px 24px', borderBottom: `1px solid ${C.border}`,
-            display: 'flex', alignItems: 'center', gap: '12px'
-          }}>
-            <div style={{ width: '3px', height: '20px', background: C.cyan, borderRadius: '2px' }} />
-            <span style={{ color: C.text, fontWeight: '700', letterSpacing: '2px', fontSize: '14px' }}>
-              {tab === 'mvp' ? 'MVP LEADERBOARD' : tab === 'bat' ? 'BATTING LEADERBOARD' : 'BOWLING LEADERBOARD'}
-              {' '}— SEASON {season}
-            </span>
-            <span style={{ marginLeft: 'auto', color: C.muted, fontSize: '12px' }}>
-              {tableData.length} players
-            </span>
+        {/* Stat Tabs (seasons 2 & 3) */}
+        {!isS4 && (
+          <div style={{ display:'flex', gap:'10px', marginBottom:'20px' }}>
+            {[['mvp','🏆 MVP'],['bat','🏏 BATTING'],['bowl','⚾ BOWLING']].map(([k,label]) => (
+              <button key={k} onClick={() => handleTabChange(k)} style={TAB_BTN(tab===k)}>{label}</button>
+            ))}
           </div>
+        )}
 
-          <div style={{ padding: '0 0 16px' }}>
-            {tab === 'mvp' && <MvpTable data={tableData} />}
-            {tab === 'bat' && <BatTable data={tableData} />}
-            {tab === 'bowl' && <BowlTable data={tableData} />}
+        {/* Search — shown for all seasons */}
+        <SearchBox value={search} onChange={setSearch} gold={isS4} />
+
+        {/* Season 4 Roster */}
+        {isS4 && <S4RosterView search={search} />}
+
+        {/* Stats Table Card (seasons 2 & 3) */}
+        {!isS4 && (
+          <div style={{ background:'#0F1640', borderRadius:'16px', border:'1px solid rgba(0,212,255,0.2)', overflow:'hidden' }}>
+            <div style={{ padding:'16px 24px', borderBottom:'1px solid rgba(0,212,255,0.2)', display:'flex', alignItems:'center', gap:'12px' }}>
+              <div style={{ width:'3px', height:'20px', background:'#00D4FF', borderRadius:'2px' }} />
+              <span style={{ color:'#fff', fontWeight:'700', letterSpacing:'2px', fontSize:'14px' }}>
+                {tableLabel} — SEASON {season}
+              </span>
+              <span style={{ marginLeft:'auto', color:'#8899CC', fontSize:'12px' }}>
+                {tableData.length}{search ? ` of ${rawTableData.length}` : ''} players
+              </span>
+            </div>
+            <div style={{ overflowX:'auto', overflowY:'auto', maxHeight:'580px' }}>
+              {tableData.length === 0
+                ? <div style={{ padding:'40px', textAlign:'center', color:'#8899CC' }}>No players found for "{search}"</div>
+                : <>
+                    {tab==='mvp'  && <MvpTable  data={tableData} />}
+                    {tab==='bat'  && <BatTable  data={tableData} />}
+                    {tab==='bowl' && <BowlTable data={tableData} />}
+                  </>
+              }
+            </div>
+            <div style={{ padding:'10px 24px', borderTop:'1px solid rgba(0,212,255,0.2)', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+              <span style={{ color:'#8899CC', fontSize:'12px' }}>
+                {search ? `Showing ${tableData.length} result${tableData.length!==1?'s':''} for "${search}"` : `Scroll to see all ${tableData.length} players`}
+              </span>
+              <span style={{ color:'rgba(0,212,255,0.4)', fontSize:'11px', letterSpacing:'1px' }}>CPL SEASON {season}</span>
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Back button */}
+        {/* Back Button */}
         <button
           onClick={() => router.push('/home')}
           style={{
-            marginTop: '24px', background: 'transparent',
-            border: `1px solid ${C.border}`, borderRadius: '8px',
-            padding: '12px 24px', color: C.cyan, fontSize: '14px',
-            fontWeight: '700', letterSpacing: '2px', cursor: 'pointer', fontFamily: 'inherit'
+            marginTop:'24px', background:'transparent',
+            border:'1px solid rgba(0,212,255,0.4)', borderRadius:'8px',
+            padding:'12px 24px', color:'#00D4FF', fontSize:'14px',
+            fontWeight:'700', letterSpacing:'2px', cursor:'pointer', fontFamily:'inherit'
           }}
         >← BACK</button>
       </div>

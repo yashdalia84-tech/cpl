@@ -79,6 +79,23 @@ export default function Navbar({ title }) {
           ADMIN
         </button>
         <button
+  onClick={() => router.push('/teams')}
+  style={{
+    background: 'transparent',
+    border: '1px solid rgba(0,212,255,0.4)',
+    borderRadius: '6px',
+    padding: '8px 16px',
+    color: '#00D4FF',
+    fontSize: '12px',
+    fontWeight: '600',
+    letterSpacing: '1px',
+    cursor: 'pointer',
+    fontFamily: 'inherit'
+  }}
+>
+  TEAMS
+</button>
+        <button
           onClick={handleLogout}
           style={{
             background: '#CC2200',
