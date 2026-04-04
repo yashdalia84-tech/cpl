@@ -16,7 +16,7 @@ export default function PlayerPage() {
   const [bidAmount, setBidAmount] = useState('')
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
-
+  const [showBidBar, setShowBidBar] = useState(false)
   useEffect(() => {
     if (!storage.getAuth()) { router.push('/'); return }
     const players = storage.getPlayers()
@@ -47,18 +47,30 @@ export default function PlayerPage() {
         setError(`${selectedTeam} already has 8 players!`)
         return
       }
-      
-      // Check MVP limit
+
+      // Figure out this player's category
       const rank = parseInt(player.mvpRank)
       const isPlayerMvp = !isNaN(rank) && rank <= 20
+
+      // Get team's current roster breakdown
+      const allPlayersNow2 = storage.getPlayers()
+      const teamRoster = allPlayersNow2.filter(p => p.sold && p.soldTo === selectedTeam)
+      const currentMvpCount = teamRoster.filter(p => {
+        const r = parseInt(p.mvpRank)
+        return !isNaN(r) && r <= 20
+      }).length
+      const currentNormalCount = teamRoster.length - currentMvpCount
+
       if (isPlayerMvp) {
-        const teamPlayers = storage.getPlayers().filter(p => p.sold && p.soldTo === selectedTeam)
-        const mvpCount = teamPlayers.filter(p => {
-          const r = parseInt(p.mvpRank)
-          return !isNaN(r) && r <= 20
-        }).length
-        if (mvpCount >= 2) {
+        // Trying to buy an MVP player
+        if (currentMvpCount >= 2) {
           setError(`${selectedTeam} already has 2 MVP players! Maximum limit reached.`)
+          return
+        }
+      } else {
+        // Trying to buy a normal player
+        if (currentNormalCount >= 6) {
+          setError(`${selectedTeam} already has 6 normal players! They must now buy MVP players only.`)
           return
         }
       }
@@ -144,15 +156,102 @@ const updatedTeams = allTeams.map(t => {
     <div style={{ minHeight: '100vh', background: '#0A0E2A' }}>
       <Navbar title="PLAYER PROFILE" />
 
-      <div style={{
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '32px 24px',
-        display: 'grid',
-        gridTemplateColumns: '1fr 1.2fr',
-        gap: '32px',
-        alignItems: 'start'
-      }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px' }}>
+
+{/* Team Bid Bar */}
+<div style={{ marginBottom: '24px' }}>
+          <button
+            onClick={() => setShowBidBar(prev => !prev)}
+            style={{
+              background: showBidBar ? '#0F1640' : 'transparent',
+              border: '1px solid rgba(0,212,255,0.3)',
+              borderRadius: '10px',
+              padding: '10px 20px',
+              color: '#00D4FF',
+              fontSize: '13px',
+              fontWeight: '700',
+              letterSpacing: '2px',
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+              marginBottom: showBidBar ? '12px' : '0',
+              transition: 'all 0.2s'
+            }}
+          >
+            {showBidBar ? '▲ HIDE BID INFO' : '▼ VIEW MAX BIDS PER TEAM'}
+          </button>
+
+          {showBidBar && (
+            <div style={{
+              background: '#0F1640',
+              border: '1px solid rgba(0,212,255,0.15)',
+              borderRadius: '16px',
+              padding: '20px 24px',
+            }}>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+                gap: '10px'
+              }}>
+                {teams.map(t => {
+                  const allPlayers = storage.getPlayers()
+                  const roster = allPlayers.filter(p => p.sold && p.soldTo === t.name)
+                  const playersCount = roster.length
+                  const slotsLeft = 8 - playersCount
+                  const maxBid = t.coins - (slotsLeft - 1) * 200
+                  const canBid = maxBid >= 200 && slotsLeft > 0
+
+                  return (
+                    <div
+                      key={t.id}
+                      onClick={() => {
+                        if (!canBid) return
+                        setStatus('sold')
+                        setSelectedTeam(t.name)
+                        setBidAmount(String(maxBid))
+                        setShowBidBar(false)
+                      }}
+                      style={{
+                        padding: '12px 14px',
+                        background: canBid ? 'rgba(0,212,255,0.06)' : 'rgba(255,255,255,0.02)',
+                        border: `1px solid ${canBid ? 'rgba(0,212,255,0.2)' : 'rgba(255,255,255,0.05)'}`,
+                        borderRadius: '10px',
+                        cursor: canBid ? 'pointer' : 'not-allowed',
+                        opacity: canBid ? 1 : 0.4,
+                        transition: 'all 0.2s'
+                      }}
+                      onMouseEnter={e => { if (canBid) e.currentTarget.style.background = 'rgba(0,212,255,0.14)' }}
+                      onMouseLeave={e => { if (canBid) e.currentTarget.style.background = 'rgba(0,212,255,0.06)' }}
+                    >
+                      <div style={{ color: '#fff', fontWeight: '700', fontSize: '13px', marginBottom: '4px' }}>{t.name}</div>
+                      <div style={{ color: '#8899CC', fontSize: '10px', marginBottom: '6px' }}>
+                        {playersCount}/8 · ₹{t.coins?.toLocaleString()}
+                      </div>
+                      {canBid ? (
+                        <div style={{ color: '#00D4FF', fontWeight: '700', fontSize: '15px' }}>
+                          ₹{maxBid.toLocaleString()}
+                        </div>
+                      ) : (
+                        <div style={{ color: '#FF6B6B', fontSize: '11px', fontWeight: '700' }}>
+                          {slotsLeft === 0 ? 'FULL' : 'INSUFFICIENT'}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+              <div style={{ color: '#8899CC', fontSize: '10px', marginTop: '10px' }}>
+                Click a team to auto-fill bid
+              </div>
+            </div>
+          )}
+        </div>
+
+<div style={{
+  display: 'grid',
+  gridTemplateColumns: '1fr 1.2fr',
+  gap: '32px',
+  alignItems: 'start'
+}}>
 
         {/* LEFT PANEL */}
         <div style={{
@@ -289,12 +388,34 @@ const updatedTeams = allTeams.map(t => {
                   type="number"
                   placeholder="Enter bid amount (min ₹200)"
                   value={bidAmount}
-                  onChange={e => setBidAmount(e.target.value)}
+                  onChange={e => {
+                    const val = e.target.value
+                    setBidAmount(val)
+                    // Live validation
+                    if (selectedTeam && val) {
+                      const bid = parseInt(val)
+                      const allTeams = storage.getTeams()
+                      const team = allTeams.find(t => t.name === selectedTeam)
+                      if (team) {
+                        const allPlayers = storage.getPlayers()
+                        const roster = allPlayers.filter(p => p.sold && p.soldTo === selectedTeam)
+                        const slotsLeft = 8 - roster.length
+                        const maxBid = team.coins - (slotsLeft - 1) * 200
+                        if (bid > maxBid) {
+                          setError(`Max bid for ${selectedTeam} is ₹${maxBid.toLocaleString()}`)
+                        } else if (bid > team.coins) {
+                          setError(`${selectedTeam} only has ₹${team.coins.toLocaleString()} left!`)
+                        } else {
+                          setError('')
+                        }
+                      }
+                    }
+                  }}
                   min={200}
                   style={{
                     width: '100%',
                     background: '#0A0E2A',
-                    border: '1px solid rgba(0,212,255,0.3)',
+                    border: `1px solid ${error ? 'rgba(204,34,0,0.6)' : 'rgba(0,212,255,0.3)'}`,
                     borderRadius: '8px',
                     padding: '12px 16px',
                     color: '#fff',
@@ -414,5 +535,7 @@ const updatedTeams = allTeams.map(t => {
         </div>
       </div>
     </div>
+    </div>
+
   )
 }
