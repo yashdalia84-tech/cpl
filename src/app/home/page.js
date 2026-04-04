@@ -742,8 +742,30 @@ const startAuction = () => {
             </div>
             <button
               onClick={() => {
-                if (unsoldMvp.length === 0) { alert('All MVP players sold!'); return }
-                const finalPlayer = unsoldMvp[Math.floor(Math.random() * unsoldMvp.length)]
+                let availableMvp = unsoldMvp
+                if (availableMvp.length === 0) {
+                  const unsoldFlaggedMvp = players.filter(p => {
+                    const rank = parseInt(p.mvpRank)
+                    return !isNaN(rank) && rank <= 20 && !p.sold && p.unsoldFlag
+                  })
+                  if (unsoldFlaggedMvp.length === 0) { alert('All MVP players have been auctioned!'); return }
+                  // Release unsold MVP players back into pool
+                  const released = players.map(p => {
+                    const rank = parseInt(p.mvpRank)
+                    if (!isNaN(rank) && rank <= 20 && !p.sold && p.unsoldFlag) {
+                      return { ...p, unsoldFlag: false }
+                    }
+                    return p
+                  })
+                  storage.setPlayers(released)
+                  setPlayers(released)
+                  playersRef.current = released
+                  availableMvp = released.filter(p => {
+                    const rank = parseInt(p.mvpRank)
+                    return !isNaN(rank) && rank <= 20 && !p.sold && !p.unsoldFlag
+                  })
+                }
+                const finalPlayer = availableMvp[Math.floor(Math.random() * availableMvp.length)]
                 setAuctionState('spinning')
                 setCurrentPlayer(null)
 
@@ -762,8 +784,8 @@ const startAuction = () => {
                       const stepsLeft = speeds.length - step
                       const rnd = stepsLeft <= 3
                         ? finalPlayer
-                        : unsoldMvp[Math.floor(Math.random() * unsoldMvp.length)]
-                      setDisplayName(rnd.name)
+                        : availableMvp[Math.floor(Math.random() * availableMvp.length)]
+                                              setDisplayName(rnd.name)
                     const progress = step / speeds.length
                     const freq = progress < 0.5 ? 400 + Math.random() * 200 : progress < 0.8 ? 600 + Math.random() * 300 : 900 + Math.random() * 400
                     playTick(progress)         

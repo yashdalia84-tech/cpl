@@ -23,8 +23,8 @@ export default function PlayerPage() {
     const found = players.find(p => String(p.id) === String(id))
     if (!found) { router.push('/home'); return }
     setPlayer(found)
-    setStatus(found.sold ? 'sold' : 'unsold')
-    setSelectedTeam(found.soldTo || '')
+    setStatus(found.sold ? 'sold' : found.unsoldFlag ? 'unsold' : 'sold')  
+      setSelectedTeam(found.soldTo || '')
     setBidAmount(found.soldPrice ? String(found.soldPrice) : '')
     setTeams(storage.getTeams())
   }, [id])
@@ -64,24 +64,26 @@ export default function PlayerPage() {
       }
 
       // Update team
-      const updatedTeams = allTeams.map(t => {
-        if (t.name === selectedTeam) {
-          return {
-            ...t,
-            coins: t.coins - bid,
-            players: [...(t.players || []), player.name]
-          }
-        }
-        // Refund previous team if player was previously sold
-        if (player.sold && t.name === player.soldTo) {
-          return {
-            ...t,
-            coins: t.coins + player.soldPrice,
-            players: (t.players || []).filter(n => n !== player.name)
-          }
-        }
-        return t
-      })
+// Update team
+const allPlayersNow = storage.getPlayers()
+const updatedTeams = allTeams.map(t => {
+  if (t.name === selectedTeam) {
+    return {
+      ...t,
+      coins: t.coins - bid,
+      players: [...allPlayersNow.filter(p => p.sold && p.soldTo === t.name).map(p => p.name), player.name]
+    }
+  }
+  // Refund previous team if player was previously sold
+  if (player.sold && t.name === player.soldTo) {
+    return {
+      ...t,
+      coins: t.coins + player.soldPrice,
+      players: allPlayersNow.filter(p => p.sold && p.soldTo === t.name && String(p.id) !== String(id)).map(p => p.name)
+    }
+  }
+  return t
+})
       storage.setTeams(updatedTeams)
 
       // Update player
@@ -124,9 +126,8 @@ export default function PlayerPage() {
         // Check if active pool is now empty for this category
 
       }
-
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2500)
+      setSaved(true)
+      router.push('/home')
   }
 
   if (!player) return (
