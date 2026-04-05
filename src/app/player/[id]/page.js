@@ -5,7 +5,7 @@ import { storage } from '@/lib/storage'
 import { TEAMS } from '@/lib/teams'
 import StatBox from '@/components/StatBox'
 import Navbar from '@/components/Navbar'
-import { PLAYER_IMAGES } from '@/lib/playerImages'
+
 
 
 function SoldCelebration({ player, team, price, onDone }) {
@@ -773,50 +773,7 @@ const updatedTeams = allTeams.map(t => {
             marginBottom: '20px'
           }}>
             </div>
-{/* Player Photo */}
-{PLAYER_IMAGES[player.id] && (
-  <div style={{
-    marginBottom: '24px',
-    borderRadius: '16px',
-    overflow: 'hidden',
-    border: '1px solid rgba(0,212,255,0.2)',
-    background: '#0F1640',
-    aspectRatio: '1/1',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }}>
-    <img
-      src={PLAYER_IMAGES[player.id]}
-      alt={player.name}
-      style={{
-        width: '100%',
-        height: '100%',
-        objectFit: 'cover',
-        objectPosition: 'center top',
-        display: 'block',
-      }}
-      onError={e => { e.currentTarget.style.display = 'none' }}
-    />
-  </div>
-)}
-{!PLAYER_IMAGES[player.id] && (
-  <div style={{
-    marginBottom: '24px',
-    borderRadius: '16px',
-    border: '1px solid rgba(0,212,255,0.1)',
-    background: '#0F1640',
-    aspectRatio: '1/1',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
-  }}>
-    <div style={{ fontSize: '48px' }}>🏏</div>
-    <div style={{ color: '#8899CC', fontSize: '12px', letterSpacing: '2px' }}>NO PHOTO</div>
-  </div>
-)}
+
           <StatBox label="MVP RANK" value={player.mvpRank} />
           <StatBox label="RUNS" value={player.runs} />
           <StatBox label="WICKETS" value={player.wickets} />
