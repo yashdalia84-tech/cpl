@@ -328,7 +328,7 @@ function S4RosterView({ search = '' }) {
         background: 'rgba(255,215,0,0.05)', border: '1px solid rgba(255,215,0,0.15)',
         borderRadius: '8px', color: '#8899CC', fontSize: '12px', textAlign: 'center'
       }}>
-        ✦ &nbsp; Season 4 stats will be updated as matches are played
+       
       </div>
     </div>
   )
