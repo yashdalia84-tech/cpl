@@ -14,7 +14,7 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
     setTimeout(() => {
-      if (username === 'subadmin' && password === 'subadmin') {
+      if (username === 'owner' && password === 'owner') {
         storage.setAuth(true)
         router.push('/stats')  // redirect subadmin here
       } else if (username === 'admin' && password === 'admin2001') {

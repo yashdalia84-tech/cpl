@@ -686,7 +686,6 @@ const startAuction = () => {
         )}
 
         {/* MVP AUCTION TAB */}
-        {/* MVP AUCTION TAB */}
 {activeTab === 'MVP' && (
   <>
     {/* Big Auction Box */}
@@ -736,7 +735,7 @@ const startAuction = () => {
               fontSize: '26px',
               fontWeight: '700',
               letterSpacing: '4px'
-            }}>MVP AUCTION</div>
+            }}>Player set 2</div>
             <div style={{ color: '#8899CC', fontSize: '15px' }}>
               <strong style={{ color: '#FFD700' }}>{unsoldMvp.length}</strong> MVP players available
             </div>
@@ -824,7 +823,7 @@ const startAuction = () => {
               onMouseEnter={e => e.currentTarget.style.boxShadow = '0 0 60px rgba(255,215,0,0.8)'}
               onMouseLeave={e => e.currentTarget.style.boxShadow = '0 0 40px rgba(255,215,0,0.5)'}
             >
-              ⚡ START MVP AUCTION
+              ⚡ START AUCTION
             </button>
           </div>
         )
