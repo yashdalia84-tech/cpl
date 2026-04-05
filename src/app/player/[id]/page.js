@@ -5,6 +5,237 @@ import { storage } from '@/lib/storage'
 import { TEAMS } from '@/lib/teams'
 import StatBox from '@/components/StatBox'
 import Navbar from '@/components/Navbar'
+import { PLAYER_IMAGES } from '@/lib/playerImages'
+
+
+function SoldCelebration({ player, team, price, onDone }) {
+    useEffect(() => {
+      const timer = setTimeout(onDone, 5200)
+      return () => clearTimeout(timer)
+    }, [])
+  
+    const colors = ['#00D4FF', '#FFD700', '#FF6B6B', '#00FF88', '#FF8C00', '#CC2200', '#fff', '#FF69B4', '#7B68EE']
+
+// Top falling confetti (120 pieces)
+const topConfetti = Array.from({ length: 120 }, (_, i) => ({
+  id: `top-${i}`,
+  left: `${Math.random() * 100}%`,
+  delay: `${Math.random() * 1.5}s`,
+  duration: `${2 + Math.random() * 1.5}s`,
+  color: colors[i % colors.length],
+  size: `${7 + Math.random() * 11}px`,
+  shape: i % 3 === 0 ? 'circle' : i % 3 === 1 ? 'square' : 'rect',
+  rotate: `${Math.random() * 360}deg`,
+  drift: `${(Math.random() - 0.5) * 250}px`,
+}))
+
+// Left cannon burst (60 pieces)
+const leftConfetti = Array.from({ length: 120 }, (_, i) => ({
+  id: `left-${i}`,
+  color: colors[i % colors.length],
+  size: `${8 + Math.random() * 10}px`,
+  shape: i % 3 === 0 ? 'circle' : i % 3 === 1 ? 'square' : 'rect',
+  delay: `${Math.random() * 0.4}s`,
+  angle: 20 + Math.random() * 70, // shoots up-right
+  power: 180 + Math.random() * 280,
+}))
+
+// Right cannon burst (60 pieces)
+const rightConfetti = Array.from({ length: 120 }, (_, i) => ({
+  id: `right-${i}`,
+  color: colors[i % colors.length],
+  size: `${8 + Math.random() * 10}px`,
+  shape: i % 3 === 0 ? 'circle' : i % 3 === 1 ? 'square' : 'rect',
+  delay: `${Math.random() * 0.4}s`,
+  angle: 110 + Math.random() * 70, // shoots up-left
+  power: 180 + Math.random() * 280,
+}))
+    return (
+      <div style={{
+        position: 'fixed', inset: 0, zIndex: 9999,
+        background: 'rgba(8, 12, 40, 0.97)',
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        overflow: 'hidden',
+        animation: 'fadeInCelebration 0.3s ease'
+      }}>
+        <style>{`
+  @keyframes fadeInCelebration { from { opacity: 0 } to { opacity: 1 } }
+  @keyframes confettiFall {
+    0% { transform: translateY(-60px) rotate(0deg) translateX(0); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg) translateX(var(--drift)); opacity: 0.1; }
+  }
+  @keyframes cannonLeft {
+    0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+    15%  { opacity: 1; }
+    100% { transform: translate(var(--cx), var(--cy)) rotate(540deg); opacity: 0; }
+  }
+  @keyframes cannonRight {
+    0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+    15%  { opacity: 1; }
+    100% { transform: translate(var(--cx), var(--cy)) rotate(-540deg); opacity: 0; }
+  }
+  @keyframes popIn {
+    0% { transform: scale(0.4); opacity: 0; }
+    60% { transform: scale(1.08); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes shimmer {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+  @keyframes badgePulse {
+    0%, 100% { box-shadow: 0 0 30px rgba(204,34,0,0.5); }
+    50% { box-shadow: 0 0 60px rgba(204,34,0,0.9), 0 0 100px rgba(204,34,0,0.3); }
+  }
+`}</style>
+  
+        {/* Confetti */}
+       {/* Top falling confetti */}
+{topConfetti.map(p => (
+  <div key={p.id} style={{
+    position: 'absolute',
+    top: '-20px',
+    left: p.left,
+    width: p.shape === 'rect' ? `${parseInt(p.size) * 2}px` : p.size,
+    height: p.size,
+    background: p.color,
+    borderRadius: p.shape === 'circle' ? '50%' : '2px',
+    '--drift': p.drift,
+    animation: `confettiFall ${p.duration} ${p.delay} ease-in forwards`,
+    transform: `rotate(${p.rotate})`,
+    opacity: 0,
+  }} />
+))}
+
+{/* Left cannon */}
+{leftConfetti.map(p => {
+  const rad = (p.angle * Math.PI) / 180
+  const cx = `${Math.cos(rad) * p.power}px`
+  const cy = `${-Math.sin(rad) * p.power}px`
+  return (
+    <div key={p.id} style={{
+      position: 'absolute',
+      bottom: '0px',
+      left: '0px',
+      width: p.shape === 'rect' ? `${parseInt(p.size) * 2}px` : p.size,
+      height: p.size,
+      background: p.color,
+      borderRadius: p.shape === 'circle' ? '50%' : '2px',
+      '--cx': cx,
+      '--cy': cy,
+      animation: `cannonLeft ${0.9 + Math.random() * 0.6}s ${p.delay} cubic-bezier(0.2,0.8,0.4,1) forwards`,
+      opacity: 0,
+    }} />
+  )
+})}
+
+{/* Right cannon */}
+{rightConfetti.map(p => {
+  const rad = (p.angle * Math.PI) / 180
+  const cx = `${Math.cos(rad) * p.power}px`
+  const cy = `${-Math.sin(rad) * p.power}px`
+  return (
+    <div key={p.id} style={{
+      position: 'absolute',
+      bottom: '0px',
+      right: '0px',
+      width: p.shape === 'rect' ? `${parseInt(p.size) * 2}px` : p.size,
+      height: p.size,
+      background: p.color,
+      borderRadius: p.shape === 'circle' ? '50%' : '2px',
+      '--cx': cx,
+      '--cy': cy,
+      animation: `cannonRight ${0.9 + Math.random() * 0.6}s ${p.delay} cubic-bezier(0.2,0.8,0.4,1) forwards`,
+      opacity: 0,
+    }} />
+  )
+})}
+  
+        {/* Main card */}
+        <div style={{
+          animation: 'popIn 0.5s 0.2s cubic-bezier(0.34,1.56,0.64,1) both',
+          textAlign: 'center',
+          padding: '0 24px',
+          maxWidth: '500px',
+          width: '100%',
+        }}>
+          {/* SOLD badge */}
+          <div style={{
+            display: 'inline-block',
+            background: '#CC2200',
+            padding: '10px 40px',
+            borderRadius: '6px',
+            marginBottom: '28px',
+            animation: 'badgePulse 1.2s ease-in-out infinite',
+          }}>
+            <span style={{
+              fontSize: '28px', fontWeight: '900',
+              letterSpacing: '8px', color: '#fff',
+              fontStyle: 'italic',
+            }}>SOLD!</span>
+          </div>
+  
+          {/* Player name */}
+          <div style={{
+            fontSize: '56px', fontWeight: '900',
+            color: '#fff', letterSpacing: '3px',
+            lineHeight: 1.05, marginBottom: '12px',
+            textShadow: '0 0 40px rgba(0,212,255,0.4)',
+            animation: 'shimmer 2s ease-in-out infinite',
+          }}>
+            {player.name.toUpperCase()}
+          </div>
+  
+          {/* Divider */}
+          <div style={{
+            width: '80px', height: '3px',
+            background: 'linear-gradient(90deg, transparent, #00D4FF, transparent)',
+            margin: '0 auto 20px',
+          }} />
+  
+          {/* "TO" label */}
+          <div style={{
+            color: '#8899CC', fontSize: '13px',
+            letterSpacing: '5px', marginBottom: '8px',
+            fontWeight: '700',
+          }}>SOLD TO</div>
+  
+          {/* Team name */}
+          <div style={{
+            fontSize: '32px', fontWeight: '800',
+            color: '#00D4FF', letterSpacing: '2px',
+            marginBottom: '20px',
+            textShadow: '0 0 20px rgba(0,212,255,0.6)',
+          }}>
+            {team.toUpperCase()}
+          </div>
+  
+          {/* Price */}
+          <div style={{
+            display: 'inline-block',
+            background: 'rgba(255,215,0,0.12)',
+            border: '1px solid rgba(255,215,0,0.4)',
+            borderRadius: '12px',
+            padding: '14px 40px',
+          }}>
+            <span style={{
+              fontSize: '42px', fontWeight: '900',
+              color: '#FFD700',
+              textShadow: '0 0 20px rgba(255,215,0,0.5)',
+              letterSpacing: '2px',
+            }}>₹{Number(price).toLocaleString()}</span>
+          </div>
+  
+          {/* CPL label */}
+          <div style={{
+            color: '#8899CC', fontSize: '11px',
+            letterSpacing: '4px', marginTop: '28px',
+          }}>CPL SEASON 4 · AUCTION</div>
+        </div>
+      </div>
+    )
+  }
 
 export default function PlayerPage() {
   const { id } = useParams()
@@ -17,6 +248,10 @@ export default function PlayerPage() {
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
   const [showBidBar, setShowBidBar] = useState(false)
+  const [showCelebration, setShowCelebration] = useState(false)
+  const [celebrationData, setCelebrationData] = useState(null)
+
+
   useEffect(() => {
     if (!storage.getAuth()) { router.push('/'); return }
     const players = storage.getPlayers()
@@ -108,6 +343,9 @@ const updatedTeams = allTeams.map(t => {
       storage.setPlayers(updated)
       setPlayer(prev => ({ ...prev, sold: true, soldTo: selectedTeam, soldPrice: bid }))
       setTeams(storage.getTeams())
+      setCelebrationData({ name: player.name, team: selectedTeam, price: bid })
+      setShowCelebration(true)
+      return
 
     } else {
         // Mark as unsold — refund if was sold
@@ -138,7 +376,6 @@ const updatedTeams = allTeams.map(t => {
         // Check if active pool is now empty for this category
 
       }
-      setSaved(true)
       router.push('/home')
   }
 
@@ -154,6 +391,17 @@ const updatedTeams = allTeams.map(t => {
 
   return (
     <div style={{ minHeight: '100vh', background: '#0A0E2A' }}>
+        {showCelebration && celebrationData && (
+        <SoldCelebration
+          player={{ name: celebrationData.name }}
+          team={celebrationData.team}
+          price={celebrationData.price}
+          onDone={() => {
+            setShowCelebration(false)
+            router.push('/home')
+          }}
+        />
+      )}
       <Navbar title="PLAYER PROFILE" />
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px' }}>
@@ -525,7 +773,50 @@ const updatedTeams = allTeams.map(t => {
             marginBottom: '20px'
           }}>
             </div>
-
+{/* Player Photo */}
+{PLAYER_IMAGES[player.id] && (
+  <div style={{
+    marginBottom: '24px',
+    borderRadius: '16px',
+    overflow: 'hidden',
+    border: '1px solid rgba(0,212,255,0.2)',
+    background: '#0F1640',
+    aspectRatio: '1/1',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  }}>
+    <img
+      src={PLAYER_IMAGES[player.id]}
+      alt={player.name}
+      style={{
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+        objectPosition: 'center top',
+        display: 'block',
+      }}
+      onError={e => { e.currentTarget.style.display = 'none' }}
+    />
+  </div>
+)}
+{!PLAYER_IMAGES[player.id] && (
+  <div style={{
+    marginBottom: '24px',
+    borderRadius: '16px',
+    border: '1px solid rgba(0,212,255,0.1)',
+    background: '#0F1640',
+    aspectRatio: '1/1',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+  }}>
+    <div style={{ fontSize: '48px' }}>🏏</div>
+    <div style={{ color: '#8899CC', fontSize: '12px', letterSpacing: '2px' }}>NO PHOTO</div>
+  </div>
+)}
           <StatBox label="MVP RANK" value={player.mvpRank} />
           <StatBox label="RUNS" value={player.runs} />
           <StatBox label="WICKETS" value={player.wickets} />

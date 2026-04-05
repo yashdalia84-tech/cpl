@@ -42,7 +42,8 @@ export const CPL_PLAYERS = [
     { id: 43, name: "MANAS MEHTA",             mvpRank: "16", runs: "60", wickets: "2",  sold: false, soldTo: null, soldPrice: null, basePrice: 200 },
     { id: 44, name: "MANN BHAVSAR",            mvpRank: "32", runs: "32", wickets: "1",  sold: false, soldTo: null, soldPrice: null, basePrice: 200 },
     { id: 45, name: "MANN PATEL",              mvpRank: "47", runs: "4",  wickets: "0",  sold: false, soldTo: null, soldPrice: null, basePrice: 200 },
-    { id: 46, name: "MANTHAN PRAJAPATI", mvpRank: "NA", runs: "NA", wickets: "NA", sold: false, soldTo: null, soldPrice: null, basePrice: 200 },    { id: 47, name: "MEDHANSH PAREKH",         mvpRank: "33", runs: "0",  wickets: "3",  sold: false, soldTo: null, soldPrice: null, basePrice: 200 },
+    { id: 46, name: "MANTHAN PRAJAPATI", mvpRank: "NA", runs: "NA", wickets: "NA", sold: false, soldTo: null, soldPrice: null, basePrice: 200 },  
+      { id: 47, name: "MEDHANSH PAREKH",         mvpRank: "33", runs: "0",  wickets: "3",  sold: false, soldTo: null, soldPrice: null, basePrice: 200 },
     { id: 48, name: "MEHUL SOHANI",            mvpRank: "NA", runs: "NA", wickets: "NA", sold: false, soldTo: null, soldPrice: null, basePrice: 200 },
     { id: 49, name: "MIHIR DALIA",             mvpRank: "36", runs: "41", wickets: "0",  sold: false, soldTo: null, soldPrice: null, basePrice: 200 },
     { id: 50, name: "MITHIL PAREKH",           mvpRank: "43", runs: "12", wickets: "0",  sold: false, soldTo: null, soldPrice: null, basePrice: 200 },
@@ -76,4 +77,5 @@ export const CPL_PLAYERS = [
     { id: 78, name: "YASHRAJSINH GOHIL",       mvpRank: "NA", runs: "NA", wickets: "NA", sold: false, soldTo: null, soldPrice: null, basePrice: 200 },
     { id: 79, name: "DR NISARG SAVJIANI",      mvpRank: "1",  runs: "132",wickets: "5",  sold: false, soldTo: null, soldPrice: null, basePrice: 200 },
     { id: 80, name: "DHYEY PATEL",             mvpRank: "55", runs: "7",  wickets: "0",  sold: false, soldTo: null, soldPrice: null, basePrice: 200 },
+    { id: 81, name: "ADITYA GUPTA",             mvpRank: "35", runs: "30",  wickets: "1",  sold: false, soldTo: null, soldPrice: null, basePrice: 200 },
   ]
