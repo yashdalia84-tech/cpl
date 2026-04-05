@@ -335,8 +335,8 @@ const startAuction = () => {
           width: 'fit-content',
           border: '1px solid rgba(0,212,255,0.15)'
         }}>
-          {['PLAYER', 'MVP'].map(tab => (
-            <button
+{['PLAYER', 'PLAYER SET 2'].map(tab => (
+                <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               style={{
@@ -686,8 +686,7 @@ const startAuction = () => {
         )}
 
         {/* MVP AUCTION TAB */}
-{activeTab === 'MVP' && (
-  <>
+{activeTab === 'PLAYER SET 2' && (  <>
     {/* Big Auction Box */}
     <div style={{
       background: '#0F1640',
@@ -1005,7 +1004,7 @@ const startAuction = () => {
               )}
               {!player.sold && (
                 <div style={{ color: 'rgba(255,215,0,0.5)', fontSize: '11px', marginTop: '8px' }}>
-                  BASE ₹200
+                  BASE ₹2000
                 </div>
               )}
             </div>

@@ -269,7 +269,8 @@ export default function PlayerPage() {
     if (status === 'sold') {
       if (!selectedTeam) { setError('Please select a team'); return }
       const bid = parseInt(bidAmount)
-      if (!bid || bid < 200) { setError('Bid must be at least ₹200'); return }
+      const minBid = parseInt(player.mvpRank) <= 20 ? 2000 : 200
+      if (!bid || bid < minBid) { setError(`Bid must be at least ₹${minBid}`); return }
 
       const allTeams = storage.getTeams()
       const team = allTeams.find(t => t.name === selectedTeam)
@@ -634,7 +635,7 @@ const updatedTeams = allTeams.map(t => {
 
                 <input
                   type="number"
-                  placeholder="Enter bid amount (min ₹200)"
+placeholder={`Enter bid amount (min ₹${parseInt(player.mvpRank) <= 20 ? 2000 : 200})`}
                   value={bidAmount}
                   onChange={e => {
                     const val = e.target.value
@@ -777,7 +778,7 @@ const updatedTeams = allTeams.map(t => {
           <StatBox label="MVP RANK" value={player.mvpRank} />
           <StatBox label="RUNS" value={player.runs} />
           <StatBox label="WICKETS" value={player.wickets} />
-          <StatBox label="BASE PRICE" value={`₹${player.basePrice || 200}`} />
+          <StatBox label="BASE PRICE" value={`₹${parseInt(player.mvpRank) <= 20 ? 2000 : 200}`} />
 
          
         </div>
